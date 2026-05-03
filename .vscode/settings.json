@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "*.gd": "gdscript",
+        "*.tscn": "godot-scene",
+        "*.tres": "godot-resource"
+    },
+    "files.insertFinalNewline": true,
+    "files.trimTrailingWhitespace": true,
+    "editor.insertSpaces": false,
+    "editor.tabSize": 4,
+    "files.exclude": {
+        "**/.godot": true
+    }
+}

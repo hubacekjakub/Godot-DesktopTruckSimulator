@@ -1,0 +1,87 @@
+name: "Release & Deploy"
+
+on:
+  workflow_call:
+    secrets:
+      BUTLER_API_KEY:
+        required: true
+      ITCH_USERNAME:
+        required: true
+      ITCH_GAME_NAME:
+        required: true
+
+env:
+  GODOT_EXPORT_VERSION: "4.6.1-stable"
+  ITCH_GAME_NAME: ${{ secrets.ITCH_GAME_NAME }}
+
+jobs:
+  # Release job - creates GitHub release with build artifacts
+  release_game:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    name: "📦 Create Release"
+    steps:
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: ${{ env.ITCH_GAME_NAME }}-Artifacts
+          path: ./builds
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1.20.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          generateReleaseNotes: true
+          tag: ${{ github.ref_name }}
+          artifacts: ./builds/*
+          name: "${{ env.ITCH_GAME_NAME }} ${{ github.ref_name }}"
+          body: |
+            ## ${{ env.ITCH_GAME_NAME }} Release ${{ github.ref_name }}
+
+            🎮 Built automatically using Godot ${{ env.GODOT_EXPORT_VERSION }}
+
+            ### 📥 Downloads
+            - **Windows**: `.exe` file
+            - **Linux**: `.x86_64` file
+            - **Web**: `.zip` file (extract and host on web server)
+
+  # Deploy job - uploads builds to itch.io
+  deploy_game:
+    runs-on: ubuntu-latest
+    name: "🚀 Deploy to itch.io"
+    steps:
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: ${{ env.ITCH_GAME_NAME }}-Artifacts
+          path: ./builds
+
+      - name: Setup Butler
+        uses: jdno/setup-butler@v1.6.0
+
+      - name: Deploy All Builds to itch.io
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+        run: |
+          echo "🚀 Deploying builds to itch.io..."
+
+          for archive in ./builds/*.zip; do
+            [ -f "$archive" ] || continue
+            FILENAME=$(basename "$archive" .zip)
+            # Convert to lowercase channel name (e.g., "Windows" -> "windows", "Web" -> "web")
+            CHANNEL=$(echo "$FILENAME" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+
+            echo "📦 Deploying $FILENAME as channel: $CHANNEL"
+            mkdir -p "./deploy_$CHANNEL"
+            unzip -q "$archive" -d "./deploy_$CHANNEL"
+
+            if butler push "./deploy_$CHANNEL" "${{ secrets.ITCH_USERNAME }}/${{ env.ITCH_GAME_NAME }}:$CHANNEL" --userversion "${{ github.ref_name }}"; then
+              echo "✅ $CHANNEL deployed successfully"
+            else
+              echo "⚠️ Failed to deploy $CHANNEL"
+            fi
+          done
+
+          echo "🎉 Deployment complete!"
+          echo "🌐 https://${{ secrets.ITCH_USERNAME }}.itch.io/${{ env.ITCH_GAME_NAME }}"

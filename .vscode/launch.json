@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "🐛 Debug GDScript",
+            "type": "godot",
+            "request": "launch",
+            "project": "${workspaceFolder}",
+            "port": 6007,
+            "address": "127.0.0.1"
+        },
+        {
+            "name": "🔗 Attach to Running Godot",
+            "type": "godot",
+            "request": "attach",
+            "address": "127.0.0.1",
+            "port": 6007
+        }
+    ]
+}

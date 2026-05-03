@@ -1,0 +1,42 @@
+name: "CI/CD Pipeline"
+
+# Orchestrator Workflow
+# 1. Validation (Check + Lint) - Always runs
+# 2. Build - Runs on tags or manual dispatch
+# 3. Release & Deploy - Runs on tags/manual, uses build artifacts
+
+on:
+  push:
+    branches: [ main, develop, feature/* ]
+    tags:
+      - "v*"
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+
+jobs:
+  # 1️⃣ Validation Stage
+  validation:
+    name: "🔍 Validation"
+    uses: ./.github/workflows/validation.yml
+
+  # 2️⃣ Build Stage
+  build:
+    name: "🏗️ Build"
+    needs: validation
+    # Run on tags OR manual dispatch
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+    uses: ./.github/workflows/build.yml
+    secrets: inherit
+
+  # 3️⃣ Release & Deploy Stage
+  release:
+    name: "🚀 Release & Deploy"
+    needs: build
+    # Run ONLY on tags (even if manual dispatch triggered build, typical release is tag-based)
+    if: startsWith(github.ref, 'refs/tags/v')
+    uses: ./.github/workflows/release.yml
+    secrets: inherit
+    permissions:
+      contents: write

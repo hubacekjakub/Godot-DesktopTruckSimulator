@@ -1,0 +1,26 @@
+<svg height="128" width="128" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="64" cy="64" r="60" fill="#2c3e50" stroke="#34495e" stroke-width="4"/>
+
+  <!-- Rocket body -->
+  <rect x="52" y="35" width="24" height="45" rx="12" fill="#e74c3c"/>
+
+  <!-- Rocket nose cone -->
+  <polygon points="64,20 72,35 56,35" fill="#c0392b"/>
+
+  <!-- Rocket flames -->
+  <polygon points="56,80 64,95 72,80" fill="#f39c12"/>
+  <polygon points="58,82 64,92 70,82" fill="#e67e22"/>
+  <polygon points="60,84 64,89 68,84" fill="#d35400"/>
+
+  <!-- Stars for "quick" effect -->
+  <polygon points="30,30 32,35 37,35 33,38 35,43 30,40 25,43 27,38 23,35 28,35" fill="#f1c40f"/>
+  <polygon points="95,45 97,50 102,50 98,53 100,58 95,55 90,58 92,53 88,50 93,50" fill="#f1c40f"/>
+  <polygon points="25,75 27,80 32,80 28,83 30,88 25,85 20,88 22,83 18,80 23,80" fill="#f1c40f"/>
+  <polygon points="100,85 102,90 107,90 103,93 105,98 100,95 95,98 97,93 93,90 98,90" fill="#f1c40f"/>
+
+  <!-- Speed lines -->
+  <line x1="15" y1="64" x2="25" y2="64" stroke="#ecf0f1" stroke-width="3" stroke-linecap="round"/>
+  <line x1="15" y1="70" x2="22" y2="70" stroke="#ecf0f1" stroke-width="2" stroke-linecap="round"/>
+  <line x1="15" y1="58" x2="22" y2="58" stroke="#ecf0f1" stroke-width="2" stroke-linecap="round"/>
+</svg>

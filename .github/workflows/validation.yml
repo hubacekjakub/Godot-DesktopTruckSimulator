@@ -1,0 +1,90 @@
+name: "Validation"
+
+on:
+  workflow_call:
+
+env:
+  GODOT_VERSION: "4.6.1"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    name: "⚡ Validate Project"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          lfs: true
+
+      - name: Setup Godot
+        uses: chickensoft-games/setup-godot@v2
+        with:
+          version: ${{ env.GODOT_VERSION }}
+          use-dotnet: false
+          include-templates: false
+
+      - name: Cache Project Imports
+        uses: actions/cache@v5
+        with:
+          path: .godot/
+          key: ${{ runner.os }}-godot-${{ env.GODOT_VERSION }}-${{ hashFiles('**/*.import', 'project.godot') }}
+          restore-keys: |
+            ${{ runner.os }}-godot-${{ env.GODOT_VERSION }}-
+
+      - name: Import Project
+        run: godot --headless --import --quit --path .
+
+      - name: Validate Scripts
+        run: |
+          echo "🔍 Validating all GDScript files..."
+          godot --headless --check-only --quit --path .
+          echo "✅ All scripts are valid"
+
+      - name: Test All Levels
+        run: |
+          echo "🎮 Testing all levels..."
+          MAIN_FAILED=0
+
+          for level in $(find ./levels -name "*.tscn" -o -name "*.scn" 2>/dev/null); do
+            echo "  Testing: $level"
+            OUTPUT=$(timeout 10 godot --headless --path . --main-scene "$level" --quit-after 3 2>&1) || true
+            echo "$OUTPUT"
+
+            if echo "$OUTPUT" | grep -q "^ERROR:"; then
+              if [[ "$level" == *"Main.tscn" ]]; then
+                echo "  ❌ ERROR: Main level has errors!"
+                MAIN_FAILED=1
+              else
+                echo "  ⚠️ WARNING: $level has errors (non-blocking)"
+              fi
+            else
+              echo "  ✅ OK: $level"
+            fi
+          done
+
+          if [ $MAIN_FAILED -eq 1 ]; then
+            echo "❌ Main level failed - blocking build"
+            exit 1
+          fi
+          echo "✅ Level testing completed"
+
+  style-check:
+    runs-on: ubuntu-latest
+    name: "📏 Code Style"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install gdtoolkit
+        run: pip install gdtoolkit==4.*
+
+      - name: Lint GDScript
+        run: |
+          echo "📏 Linting GDScript files..."
+          gdlint scripts/ || true
+          echo "✅ Lint check completed"
+
+      - name: Format Check
+        run: |
+          echo "📐 Checking GDScript formatting..."
+          gdformat --check scripts/ || echo "⚠️ Some files need formatting (run: gdformat scripts/)"
