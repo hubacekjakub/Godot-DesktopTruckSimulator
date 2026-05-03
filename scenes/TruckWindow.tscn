@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://ddniqxic3vthh"]
+
+[ext_resource type="Script" uid="uid://bxah4rl3sd8a7" path="res://scripts/truck_window.gd" id="1_truck_script"]
+[ext_resource type="Texture2D" uid="uid://d03fjxhj6urr1" path="res://assets/textures/truck.png" id="2_truck_tex"]
+
+[node name="TruckWindow" type="Window" unique_id=192936038]
+transparent_bg = true
+oversampling_override = 1.0
+position = Vector2i(0, 36)
+size = Vector2i(200, 150)
+borderless = true
+always_on_top = true
+transparent = true
+script = ExtResource("1_truck_script")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=584091052]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_truck_tex")
+expand_mode = 1
+stretch_mode = 5

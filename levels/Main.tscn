@@ -1,50 +1,17 @@
-[gd_scene load_steps=3 format=3 uid="uid://djvq1dkxxkspr"]
+[gd_scene format=3 uid="uid://djvq1dkxxkspr"]
 
-[ext_resource type="Script" uid="uid://dvv31ksgjgi4f" path="res://scripts/Main.gd" id="1_7vmfj"]
-[ext_resource type="PackedScene" uid="uid://b5y8nxkqowq3r" path="res://scenes/Ball.tscn" id="3_0r5hm"]
+[ext_resource type="Script" uid="uid://cbpbunqxcfuh5" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="Texture2D" uid="uid://d03fjxhj6urr1" path="res://assets/textures/truck.png" id="3_2jfjj"]
 
-[node name="Main" type="Node2D"]
-script = ExtResource("1_7vmfj")
+[node name="Main" type="Node2D" unique_id=1808567993]
+script = ExtResource("1_main")
 
-[node name="Background" type="ColorRect" parent="."]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_right = 1280.0
-offset_bottom = 720.0
-color = Color(0.1, 0.1, 0.15, 1)
+[node name="Window" type="Window" parent="." unique_id=1978096911]
+oversampling_override = 1.0
+size = Vector2i(300, 300)
+borderless = true
+always_on_top = true
 
-[node name="Ball" parent="." instance=ExtResource("3_0r5hm")]
-position = Vector2(640, 360)
-
-[node name="UI" type="CanvasLayer" parent="."]
-
-[node name="CenterLabel" type="Label" parent="UI"]
-anchors_preset = 2
-anchor_left = 0.5
-anchor_top = 0.0
-anchor_right = 0.5
-anchor_bottom = 0.0
-offset_left = -200.0
-offset_top = 10.0
-offset_right = 200.0
-offset_bottom = 60.0
-theme_override_font_sizes/font_size = 48
-text = "Godot QuickStart"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="InstructionLabel" type="Label" parent="UI"]
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -200.0
-offset_top = -60.0
-offset_right = 200.0
-offset_bottom = -20.0
-theme_override_font_sizes/font_size = 16
-text = "Use WASD or Arrow Keys to move"
-horizontal_alignment = 1
-vertical_alignment = 1
+[node name="Truck" type="Sprite2D" parent="Window" unique_id=312345669]
+position = Vector2(150, 150)
+texture = ExtResource("3_2jfjj")

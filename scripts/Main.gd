@@ -1,21 +1,33 @@
-## Main scene controller for the Godot QuickStart template
-##
-## Handles initial scene setup and basic input management.
 extends Node2D
 
-@onready var ball: CharacterBody2D = $Ball
-
-func _ready() -> void:
-	print("Godot QuickStart Template Ready!")
-	_setup_initial_ball_position()
-
-
-func _setup_initial_ball_position() -> void:
-	# Position ball at center of screen
-	var screen_size := get_viewport().get_visible_rect().size
-	ball.position = screen_size / 2.0
-
-
-func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_cancel"):
-		get_tree().quit()
+func _ready():
+	# The main viewport must also be transparent and click-through
+	var main_window = get_window()
+	main_window.transparent = true
+	main_window.transparent_bg = true
+	main_window.borderless = true
+	main_window.mouse_passthrough = true
+	
+	# Crucial: The default Godot clear color is opaque gray/black. We must set it to transparent!
+	# RenderingServer.set_default_clear_color(Color(0, 0, 0, 0))
+	
+	# Move the main Godot application window completely off-screen so we only see the sub-window
+	main_window.position = Vector2i(-10000, -10000)
+	
+	# The sub-window needs its transparent flag cycled to work around Godot #71642 on Windows
+	var sub_window = $Window
+	sub_window.borderless = true
+	sub_window.transparent = false
+	sub_window.transparent_bg = false
+	
+	# Wait for OS windows to initialize
+	await get_tree().process_frame
+	await get_tree().process_frame
+	
+	sub_window.transparent = true
+	sub_window.transparent_bg = true
+	
+	# Center the sub-window on the screen
+	var screen_size = DisplayServer.screen_get_size()
+	var window_size = sub_window.size
+	sub_window.position = Vector2i((screen_size.x - window_size.x) / 2, (screen_size.y - window_size.y) / 2)
