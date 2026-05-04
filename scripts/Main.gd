@@ -6,6 +6,7 @@ extends Node2D
 
 @export var speed_min = 200
 @export var speed_max = 600
+@export var taskbar_margin: int = 100
 
 @onready var _sub_window: Window = $Window
 @onready var _truck_sprite: Sprite2D = $Window/Truck
@@ -45,7 +46,6 @@ func _ready():
 
 ## Begins a new pass across the screen in the current _direction.
 func _start_pass():
-	var taskbar_margin = -100
 	_speed = randf_range(speed_min, speed_max)
 
 	if _direction == 1:
