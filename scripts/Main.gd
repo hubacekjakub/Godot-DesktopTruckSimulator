@@ -26,6 +26,10 @@ func _ready() -> void:
 	var main_window = get_window()
 	main_window.position = Vector2i(-10000, -10000)
 
+	# Ensure the sub-window is not transient to the hidden main window.
+	# Transient windows are often clamped to the parent's screen by the OS.
+	_sub_window.transient = false
+	
 	_update_desktop_bounds()
 
 	# Workaround for Godot bug #71642 on Windows:
@@ -55,10 +59,12 @@ func _process(delta: float) -> void:
 	_current_x += _speed * _direction * delta
 	_sub_window.position.x = int(_current_x)
 
-	# Check if fully off-screen using desktop bounds
-	if _direction == 1 and _sub_window.position.x > _desktop_rect.position.x + _desktop_rect.size.x:
+	# Check if fully off-screen using desktop bounds.
+	# We use _current_x instead of _sub_window.position.x to avoid logic failures
+	# if the OS temporarily clamps the window position at screen edges.
+	if _direction == 1 and _current_x > _desktop_rect.position.x + _desktop_rect.size.x:
 		_begin_wait()
-	elif _direction == -1 and _sub_window.position.x < _desktop_rect.position.x - _sub_window.size.x:
+	elif _direction == -1 and _current_x < _desktop_rect.position.x - _sub_window.size.x:
 		_begin_wait()
 
 # endregion
@@ -68,6 +74,7 @@ func _process(delta: float) -> void:
 
 ## Begins a new pass across the screen in the current _direction.
 func _start_pass() -> void:
+	_update_desktop_bounds()
 	_speed = randf_range(speed_min, speed_max)
 
 	if _direction == 1:
