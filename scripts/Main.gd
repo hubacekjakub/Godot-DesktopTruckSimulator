@@ -15,11 +15,14 @@ var _current_x: float = 0.0
 var _speed: float = 400.0
 var _direction: int = 1 # 1 = left-to-right, -1 = right-to-left
 var _moving: bool = false
+var _desktop_rect: Rect2i
 
 func _ready():
 	# Hide the main application window off-screen.
 	var main_window = get_window()
 	main_window.position = Vector2i(-10000, -10000)
+
+	_update_desktop_bounds()
 
 	# Workaround for Godot bug #71642 on Windows:
 	# The OS ignores transparency flags set before the native window handle
@@ -81,6 +84,30 @@ func _begin_wait():
 	_wait_timer.start()
 
 ## Called when the wait timer fires. Flips direction and starts a new pass.
+func _update_desktop_bounds():
+	var screen_count = DisplayServer.get_screen_count()
+	var min_x = 0
+	var max_x = 0
+	var min_y = 0
+	var max_y = 0
+	
+	for i in range(screen_count):
+		var pos = DisplayServer.screen_get_position(i)
+		var size = DisplayServer.screen_get_size(i)
+		
+		if i == 0:
+			min_x = pos.x
+			max_x = pos.x + size.x
+			min_y = pos.y
+			max_y = pos.y + size.y
+		else:
+			min_x = min(min_x, pos.x)
+			max_x = max(max_x, pos.x + size.x)
+			min_y = min(min_y, pos.y)
+			max_y = max(max_y, pos.y + size.y)
+			
+	_desktop_rect = Rect2i(min_x, min_y, max_x - min_x, max_y - min_y)
+
 func _on_wait_timer_timeout():
 	_direction *= -1
 	_start_pass()
