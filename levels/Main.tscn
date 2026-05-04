@@ -7,11 +7,15 @@
 script = ExtResource("1_main")
 
 [node name="Window" type="Window" parent="." unique_id=1978096911]
+transparent_bg = true
 oversampling_override = 1.0
-size = Vector2i(300, 300)
+size = Vector2i(400, 300)
 borderless = true
 always_on_top = true
+transparent = true
+unfocusable = true
 
 [node name="Truck" type="Sprite2D" parent="Window" unique_id=312345669]
-position = Vector2(150, 150)
+position = Vector2(200, 150)
+scale = Vector2(2, 2)
 texture = ExtResource("3_2jfjj")

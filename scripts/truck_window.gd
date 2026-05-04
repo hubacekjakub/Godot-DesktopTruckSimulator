@@ -1,45 +1,47 @@
 extends Window
+## A self-contained transparent truck window that drives across the bottom
+## of the screen from left to right and cleans itself up when done.
+## Intended to be instantiated by the Manager (main.gd) via PackedScene.
+##
+## NOTE: Currently unused — Main.tscn uses a static $Window node instead.
+## This scene will be used once we implement the 10-second spawner.
 
-var speed: float = 150.0
-var current_x: float = 0.0
+@export var speed: float = 150.0
+
+var _current_x: float = 0.0
 
 func _ready():
-	# Ensure the window is configured correctly for transparency
+	# Window flags
 	borderless = true
 	always_on_top = true
 	mouse_passthrough = true
-	
-	# With Godot 4.3+ on OpenGL, we still might need the cycle trick, but
-	# let's try just setting it normally first since OpenGL is robust.
+
+	# Workaround for Godot bug #71642 on Windows:
+	# Cycle transparency off→on after 2 frames so the OS window handle
+	# is fully constructed before we request alpha compositing from DWM.
 	transparent = false
 	transparent_bg = false
 	await get_tree().process_frame
 	await get_tree().process_frame
 	transparent = true
 	transparent_bg = true
-	
-	# Strip theme background just in case
+
+	# Strip Godot's default UI panel (draws a gray background)
 	var empty_style = StyleBoxEmpty.new()
 	add_theme_stylebox_override("embedded_border", empty_style)
 	add_theme_stylebox_override("embedded_unfocused_border", empty_style)
 	add_theme_stylebox_override("panel", empty_style)
-	
-	# Get the screen size to spawn the truck at the bottom left
+
+	# Position at bottom of the screen, starting off-screen to the left
 	var screen_size = DisplayServer.screen_get_size()
-	
-	# Position at bottom of the screen, start off-screen to the left
-	# Let's say 40 pixels above the absolute bottom to account for taskbar
-	var taskbar_margin = 40
-	var start_y = screen_size.y - size.y - taskbar_margin
-	current_x = -size.x
-	position = Vector2i(int(current_x), start_y)
+	var taskbar_margin = 80
+	_current_x = float(-size.x)
+	position = Vector2i(int(_current_x), screen_size.y - size.y - taskbar_margin)
 
 func _process(delta: float):
-	# Move the window to the right smoothly
-	current_x += speed * delta
-	position.x = int(current_x)
-	
-	# If the window has moved completely off the right side of the screen, destroy it
-	var screen_size = DisplayServer.screen_get_size()
-	if position.x > screen_size.x:
+	_current_x += speed * delta
+	position.x = int(_current_x)
+
+	# Self-destruct once fully off-screen on the right
+	if position.x > DisplayServer.screen_get_size().x:
 		queue_free()

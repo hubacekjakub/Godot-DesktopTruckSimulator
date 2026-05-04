@@ -13,7 +13,7 @@ config_version=5
 config/name="Godot-DesktopTruckSimulator"
 config/description="A simple desktop truck animation."
 run/main_scene="res://levels/Main.tscn"
-config/features=PackedStringArray("4.6", "4.6.1", "Forward Plus")
+config/features=PackedStringArray("4.6", "4.6.1", "GL Compatibility")
 boot_splash/show_image=false
 config/icon="res://icon.svg"
 
