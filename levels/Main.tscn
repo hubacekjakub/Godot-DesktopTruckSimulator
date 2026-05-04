@@ -19,3 +19,6 @@ unfocusable = true
 position = Vector2(200, 150)
 scale = Vector2(2, 2)
 texture = ExtResource("3_2jfjj")
+
+[node name="WaitTimer" type="Timer" parent="." unique_id=239512109]
+one_shot = true

@@ -4,31 +4,27 @@ extends Node2D
 ## with a transparent background using the Godot #71642 workaround.
 ## Animates the truck window across the bottom of the screen, alternating direction.
 
-var _sub_window: Window
-var _truck_sprite: Sprite2D
+@export var speed_min = 200
+@export var speed_max = 600
+
+@onready var _sub_window: Window = $Window
+@onready var _truck_sprite: Sprite2D = $Window/Truck
+@onready var _wait_timer: Timer = $WaitTimer
+
 var _current_x: float = 0.0
-var _speed: float = 200.0
+var _speed: float = 400.0
 var _direction: int = 1 # 1 = left-to-right, -1 = right-to-left
 var _moving: bool = false
-var _waiting: bool = false
-var _wait_timer: float = 0.0
 
 func _ready():
 	# Hide the main application window off-screen.
 	var main_window = get_window()
-	main_window.transparent = true
-	main_window.transparent_bg = true
-	main_window.borderless = true
-	main_window.mouse_passthrough = true
 	main_window.position = Vector2i(-10000, -10000)
 
 	# Workaround for Godot bug #71642 on Windows:
 	# The OS ignores transparency flags set before the native window handle
 	# (HWND) is fully created. We start with transparent = false, wait 2
 	# frames for the OS to finish constructing the window, then toggle it on.
-	_sub_window = $Window
-	_truck_sprite = $Window/Truck
-	_sub_window.borderless = true
 	_sub_window.transparent = false
 	_sub_window.transparent_bg = false
 
@@ -38,21 +34,24 @@ func _ready():
 	_sub_window.transparent = true
 	_sub_window.transparent_bg = true
 
+	# Connect the wait timer
+	_wait_timer.timeout.connect(_on_wait_timer_timeout)
+
 	# Start the first pass (left to right)
 	_start_pass()
 
+## Begins a new pass across the screen in the current _direction.
 func _start_pass():
 	var screen_size = DisplayServer.screen_get_size()
 	var taskbar_margin = -100
+	
+	_speed = randf_range(speed_min, speed_max)
 
 	if _direction == 1:
-		# Left to right: start off-screen on the left
 		_current_x = float(-_sub_window.size.x)
 	else:
-		# Right to left: start off-screen on the right
 		_current_x = float(screen_size.x)
 
-	# Flip the truck sprite to face the direction of travel
 	_truck_sprite.flip_h = (_direction == -1)
 
 	_sub_window.position = Vector2i(
@@ -60,16 +59,8 @@ func _start_pass():
 		screen_size.y - _sub_window.size.y - taskbar_margin
 	)
 	_moving = true
-	_waiting = false
 
 func _process(delta: float):
-	if _waiting:
-		_wait_timer -= delta
-		if _wait_timer <= 0.0:
-			_direction *= -1
-			_start_pass()
-		return
-
 	if not _moving or _sub_window == null:
 		return
 
@@ -83,7 +74,13 @@ func _process(delta: float):
 	elif _direction == -1 and _sub_window.position.x < -_sub_window.size.x:
 		_begin_wait()
 
+## Stops movement and starts a random 5–15s wait before the next pass.
 func _begin_wait():
 	_moving = false
-	_waiting = true
-	_wait_timer = randf_range(5.0, 15.0)
+	_wait_timer.wait_time = randf_range(5.0, 15.0)
+	_wait_timer.start()
+
+## Called when the wait timer fires. Flips direction and starts a new pass.
+func _on_wait_timer_timeout():
+	_direction *= -1
+	_start_pass()

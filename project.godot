@@ -26,7 +26,7 @@ window/size/always_on_top=true
 window/size/transparent=true
 window/subwindows/embed_subwindows=false
 window/per_pixel_transparency/allowed=true
-
+window/size/mouse_passthrough=true
 
 [rendering]
 
