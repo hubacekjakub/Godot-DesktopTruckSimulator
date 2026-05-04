@@ -45,21 +45,19 @@ func _ready():
 
 ## Begins a new pass across the screen in the current _direction.
 func _start_pass():
-	var screen_size = DisplayServer.screen_get_size()
 	var taskbar_margin = -100
-	
 	_speed = randf_range(speed_min, speed_max)
 
 	if _direction == 1:
-		_current_x = float(-_sub_window.size.x)
+		_current_x = float(_desktop_rect.position.x - _sub_window.size.x)
 	else:
-		_current_x = float(screen_size.x)
+		_current_x = float(_desktop_rect.position.x + _desktop_rect.size.x)
 
 	_truck_sprite.flip_h = (_direction == -1)
 
 	_sub_window.position = Vector2i(
 		int(_current_x),
-		screen_size.y - _sub_window.size.y - taskbar_margin
+		_desktop_rect.position.y + _desktop_rect.size.y - _sub_window.size.y - taskbar_margin
 	)
 	_moving = true
 
