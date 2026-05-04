@@ -68,11 +68,10 @@ func _process(delta: float):
 	_current_x += _speed * _direction * delta
 	_sub_window.position.x = int(_current_x)
 
-	# Check if fully off-screen
-	var screen_width = DisplayServer.screen_get_size().x
-	if _direction == 1 and _sub_window.position.x > screen_width:
+	# Check if fully off-screen using desktop bounds
+	if _direction == 1 and _sub_window.position.x > _desktop_rect.position.x + _desktop_rect.size.x:
 		_begin_wait()
-	elif _direction == -1 and _sub_window.position.x < -_sub_window.size.x:
+	elif _direction == -1 and _sub_window.position.x < _desktop_rect.position.x - _sub_window.size.x:
 		_begin_wait()
 
 ## Stops movement and starts a random 5–15s wait before the next pass.
