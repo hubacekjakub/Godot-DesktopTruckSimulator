@@ -83,7 +83,7 @@ func _begin_wait():
 	_wait_timer.wait_time = randf_range(5.0, 15.0)
 	_wait_timer.start()
 
-## Called when the wait timer fires. Flips direction and starts a new pass.
+## Calculates the total bounding box of all connected screens and updates _desktop_rect.
 func _update_desktop_bounds():
 	var screen_count = DisplayServer.get_screen_count()
 	var min_x = 0
@@ -108,6 +108,7 @@ func _update_desktop_bounds():
 			
 	_desktop_rect = Rect2i(min_x, min_y, max_x - min_x, max_y - min_y)
 
+## Called when the wait timer fires. Flips direction and starts a new pass.
 func _on_wait_timer_timeout():
 	_direction *= -1
 	_start_pass()
