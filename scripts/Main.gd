@@ -4,13 +4,9 @@ extends Node2D
 ## with a transparent background using the Godot #71642 workaround.
 ## Animates the truck window across the bottom of the screen, alternating direction.
 
-@export var speed_min = 200
-@export var speed_max = 600
+@export var speed_min: float = 200.0
+@export var speed_max: float = 600.0
 @export var taskbar_margin: int = 100
-
-@onready var _sub_window: Window = $Window
-@onready var _truck_sprite: Sprite2D = $Window/Truck
-@onready var _wait_timer: Timer = $WaitTimer
 
 var _current_x: float = 0.0
 var _speed: float = 400.0
@@ -18,7 +14,14 @@ var _direction: int = 1 # 1 = left-to-right, -1 = right-to-left
 var _moving: bool = false
 var _desktop_rect: Rect2i
 
-func _ready():
+@onready var _sub_window: Window = $Window
+@onready var _truck_sprite: Sprite2D = $Window/Truck
+@onready var _wait_timer: Timer = $WaitTimer
+
+
+# region Virtual Methods
+
+func _ready() -> void:
 	# Hide the main application window off-screen.
 	var main_window = get_window()
 	main_window.position = Vector2i(-10000, -10000)
@@ -44,8 +47,27 @@ func _ready():
 	# Start the first pass (left to right)
 	_start_pass()
 
+
+func _process(delta: float) -> void:
+	if not _moving or _sub_window == null:
+		return
+
+	_current_x += _speed * _direction * delta
+	_sub_window.position.x = int(_current_x)
+
+	# Check if fully off-screen using desktop bounds
+	if _direction == 1 and _sub_window.position.x > _desktop_rect.position.x + _desktop_rect.size.x:
+		_begin_wait()
+	elif _direction == -1 and _sub_window.position.x < _desktop_rect.position.x - _sub_window.size.x:
+		_begin_wait()
+
+# endregion
+
+
+# region Private Methods
+
 ## Begins a new pass across the screen in the current _direction.
-func _start_pass():
+func _start_pass() -> void:
 	_speed = randf_range(speed_min, speed_max)
 
 	if _direction == 1:
@@ -61,27 +83,16 @@ func _start_pass():
 	)
 	_moving = true
 
-func _process(delta: float):
-	if not _moving or _sub_window == null:
-		return
-
-	_current_x += _speed * _direction * delta
-	_sub_window.position.x = int(_current_x)
-
-	# Check if fully off-screen using desktop bounds
-	if _direction == 1 and _sub_window.position.x > _desktop_rect.position.x + _desktop_rect.size.x:
-		_begin_wait()
-	elif _direction == -1 and _sub_window.position.x < _desktop_rect.position.x - _sub_window.size.x:
-		_begin_wait()
 
 ## Stops movement and starts a random 5–15s wait before the next pass.
-func _begin_wait():
+func _begin_wait() -> void:
 	_moving = false
 	_wait_timer.wait_time = randf_range(5.0, 15.0)
 	_wait_timer.start()
 
+
 ## Calculates the total bounding box of all connected screens and updates _desktop_rect.
-func _update_desktop_bounds():
+func _update_desktop_bounds() -> void:
 	var screen_count = DisplayServer.get_screen_count()
 	var min_x = 0
 	var max_x = 0
@@ -105,7 +116,10 @@ func _update_desktop_bounds():
 			
 	_desktop_rect = Rect2i(min_x, min_y, max_x - min_x, max_y - min_y)
 
+
 ## Called when the wait timer fires. Flips direction and starts a new pass.
-func _on_wait_timer_timeout():
+func _on_wait_timer_timeout() -> void:
 	_direction *= -1
 	_start_pass()
+
+# endregion
