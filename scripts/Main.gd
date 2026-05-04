@@ -43,7 +43,7 @@ func _ready():
 
 func _start_pass():
 	var screen_size = DisplayServer.screen_get_size()
-	var taskbar_margin = 80
+	var taskbar_margin = -100
 
 	if _direction == 1:
 		# Left to right: start off-screen on the left
@@ -51,7 +51,8 @@ func _start_pass():
 	else:
 		# Right to left: start off-screen on the right
 		_current_x = float(screen_size.x)
-		# Flip the truck sprite horizontally
+
+	# Flip the truck sprite to face the direction of travel
 	_truck_sprite.flip_h = (_direction == -1)
 
 	_sub_window.position = Vector2i(

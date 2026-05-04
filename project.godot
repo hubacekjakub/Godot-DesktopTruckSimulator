@@ -27,11 +27,6 @@ window/size/transparent=true
 window/subwindows/embed_subwindows=false
 window/per_pixel_transparency/allowed=true
 
-[layer_names]
-
-2d_physics/layer_1="Player"
-2d_physics/layer_2="Ball"
-2d_physics/layer_3="Walls"
 
 [rendering]
 

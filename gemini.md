@@ -1,32 +1,23 @@
 # Desktop Truck Simulator - Workspace Setup
 
 ## Requirements
-1. **Simple Truck Animation**: A truck appears every 10 seconds and moves across the bottom of the screen from left to right.
-2. **Window Component**: The truck will be implemented using a Godot `Window` component. This allows it to act as an independent OS window on the desktop.
-3. **Future Extensibility**: The architecture should support adding more windows in the future.
-4. **Non-Interactive**: The truck must not be clickable or draggable by the user.
+1. **Truck Animation**: A transparent, borderless truck drives across the bottom of the screen, alternating direction with a random 5–15 second pause between passes.
+2. **Window Component**: The truck is rendered inside a Godot `Window` node configured as a separate OS window (`embed_subwindows = false`).
+3. **Non-Interactive**: The truck window is unfocusable and the main app window has `mouse_passthrough` enabled.
+4. **Future Extensibility**: The architecture can support adding more animated windows.
 
-## Implementation Plan
-1. **Project Settings Configuration**:
-   - Ensure the main Godot window is completely invisible (transparent, borderless, mouse-passthrough).
-   - Ensure `display/window/subwindows/embed_subwindows` is set to `false` so `Window` nodes spawn as separate OS windows instead of being contained in the main window.
-   - Enable per-pixel transparency and transparent background.
+## Architecture
+- **`Main.tscn`** — Contains an invisible `Node2D` manager and a child `Window` node with a `Sprite2D` truck.
+- **`main.gd`** — Hides the main Godot window off-screen, applies the Godot #71642 transparency workaround to the sub-window, and runs the movement/direction logic in `_process()`.
+- **Renderer**: `gl_compatibility` (OpenGL). Required because Vulkan (`forward_plus`) fails to negotiate per-pixel transparency with Windows DWM on certain hardware.
 
-2. **Main Scene (`Main.tscn`) & Script (`main.gd`)**:
-   - The main scene will act as an invisible manager.
-   - It will contain a `Timer` set to 10 seconds.
-   - When the timer times out, it will instantiate a new truck window and add it to the scene tree.
-
-3. **Truck Window Scene (`TruckWindow.tscn`) & Script (`truck_window.gd`)**:
-   - The root node will be a `Window`.
-   - The `Window` will be configured as borderless, transparent, always on top, and unresizable.
-   - We will enable `mouse_passthrough` so clicks go right through it to the desktop behind it.
-   - It will have a `Sprite2D` or `TextureRect` with the truck texture.
-   - The script will get the current screen size, position the window at the bottom-left off-screen, and move it to the right every frame (`_process`).
-   - Once it goes completely off-screen on the right, the window will `queue_free()` itself.
+## Key Workarounds
+- **Godot Bug #71642**: Windows ignores transparency flags set before the native window handle (HWND) is fully created. Fix: set `transparent = false` initially, wait 2 frames, then toggle to `true`.
+- **Renderer**: Must use `gl_compatibility` — `forward_plus` (Vulkan) produces a black background on Windows.
 
 ## Status
 - [x] Initialize `gemini.md`
-- [x] Update `project.godot` settings
-- [x] Create `TruckWindow.tscn` and `truck_window.gd`
-- [x] Update `Main.tscn` and `main.gd` to act as the manager
+- [x] Configure `project.godot` (OpenGL, transparency, borderless, non-embedded sub-windows)
+- [x] Create `Main.tscn` with transparent `Window` and `Sprite2D` truck
+- [x] Implement `main.gd` with transparency workaround and movement logic
+- [x] Direction-switching with random 5–15s delay between passes
