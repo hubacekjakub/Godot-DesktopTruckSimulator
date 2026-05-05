@@ -13,6 +13,7 @@ var _speed: float = 400.0
 var _direction: int = 1 # 1 = left-to-right, -1 = right-to-left
 var _moving: bool = false
 var _desktop_rect: Rect2i
+var _fade_padding: int = 100
 
 @onready var _sub_window: Window = $Window
 @onready var _truck_sprite: Sprite2D = $Window/Truck
@@ -45,6 +46,11 @@ func _ready() -> void:
 	_sub_window.transparent = true
 	_sub_window.transparent_bg = true
 
+	# Update window sizing and centering for fade padding
+	var truck_width = _truck_sprite.get_rect().size.x * _truck_sprite.scale.x
+	_sub_window.size = Vector2i(int(truck_width + (_fade_padding * 2)), int(_sub_window.size.y))
+	_truck_sprite.position = Vector2(_sub_window.size.x / 2.0, _sub_window.size.y / 2.0)
+
 	# Connect the wait timer
 	_wait_timer.timeout.connect(_on_wait_timer_timeout)
 
@@ -62,9 +68,9 @@ func _process(delta: float) -> void:
 	# Check if fully off-screen using desktop bounds.
 	# We use _current_x instead of _sub_window.position.x to avoid logic failures
 	# if the OS temporarily clamps the window position at screen edges.
-	if _direction == 1 and _current_x > _desktop_rect.position.x + _desktop_rect.size.x:
+	if _direction == 1 and _current_x > _desktop_rect.position.x + _desktop_rect.size.x - _fade_padding:
 		_begin_wait()
-	elif _direction == -1 and _current_x < _desktop_rect.position.x - _sub_window.size.x:
+	elif _direction == -1 and _current_x < _desktop_rect.position.x - _sub_window.size.x + _fade_padding:
 		_begin_wait()
 
 # endregion
@@ -78,9 +84,9 @@ func _start_pass() -> void:
 	_speed = randf_range(speed_min, speed_max)
 
 	if _direction == 1:
-		_current_x = float(_desktop_rect.position.x - _sub_window.size.x)
+		_current_x = float(_desktop_rect.position.x - _sub_window.size.x + _fade_padding)
 	else:
-		_current_x = float(_desktop_rect.position.x + _desktop_rect.size.x)
+		_current_x = float(_desktop_rect.position.x + _desktop_rect.size.x - _fade_padding)
 
 	_truck_sprite.flip_h = (_direction == -1)
 
