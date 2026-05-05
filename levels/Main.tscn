@@ -23,7 +23,7 @@ unfocusable = true
 [node name="Truck" type="Sprite2D" parent="Window" unique_id=312345669]
 material = SubResource("ShaderMaterial_fade")
 position = Vector2(200, 150)
-scale = Vector2(2, 2)
+scale = Vector2(1.5, 1.5)
 texture = ExtResource("3_2jfjj")
 
 [node name="WaitTimer" type="Timer" parent="." unique_id=239512109]
