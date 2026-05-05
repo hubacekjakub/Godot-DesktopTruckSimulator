@@ -1,7 +1,12 @@
-[gd_scene format=3 uid="uid://djvq1dkxxkspr"]
+[gd_scene load_steps=5 format=3 uid="uid://djvq1dkxxkspr"]
 
 [ext_resource type="Script" uid="uid://cbpbunqxcfuh5" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Texture2D" uid="uid://d03fjxhj6urr1" path="res://assets/textures/truck.png" id="3_2jfjj"]
+[ext_resource type="Shader" path="res://shaders/truck_fade.gdshader" id="4_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fade"]
+shader = ExtResource("4_shader")
+shader_parameter/fade_margin = 0.1
 
 [node name="Main" type="Node2D" unique_id=1808567993]
 script = ExtResource("1_main")
@@ -16,6 +21,7 @@ transparent = true
 unfocusable = true
 
 [node name="Truck" type="Sprite2D" parent="Window" unique_id=312345669]
+material = SubResource("ShaderMaterial_fade")
 position = Vector2(200, 150)
 scale = Vector2(2, 2)
 texture = ExtResource("3_2jfjj")
