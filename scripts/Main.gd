@@ -98,31 +98,13 @@ func _begin_wait() -> void:
 	_wait_timer.start()
 
 
-## Calculates the total bounding box of all connected screens and updates _desktop_rect.
+## Calculates the bounding box of the primary screen and updates _desktop_rect.
 func _update_desktop_bounds() -> void:
-	var screen_count = DisplayServer.get_screen_count()
-	var min_x = 0
-	var max_x = 0
-	var min_y = 0
-	var max_y = 0
-	
-	for i in range(screen_count):
-		var pos = DisplayServer.screen_get_position(i)
-		var size = DisplayServer.screen_get_size(i)
-		
-		if i == 0:
-			min_x = pos.x
-			max_x = pos.x + size.x
-			min_y = pos.y
-			max_y = pos.y + size.y
-		else:
-			min_x = min(min_x, pos.x)
-			max_x = max(max_x, pos.x + size.x)
-			min_y = min(min_y, pos.y)
-			max_y = max(max_y, pos.y + size.y)
-			
-	_desktop_rect = Rect2i(min_x, min_y, max_x - min_x, max_y - min_y)
+	var screen_idx = 0 # Always use primary screen
+	var pos = DisplayServer.screen_get_position(screen_idx)
+	var size = DisplayServer.screen_get_size(screen_idx)
 
+	_desktop_rect = Rect2i(pos.x, pos.y, size.x, size.y)
 
 ## Called when the wait timer fires. Flips direction and starts a new pass.
 func _on_wait_timer_timeout() -> void:
