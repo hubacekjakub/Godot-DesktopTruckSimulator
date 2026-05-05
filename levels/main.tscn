@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://djvq1dkxxkspr"]
 
-[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="Script" uid="uid://cd8ynd3ph4u52" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Texture2D" uid="uid://d03fjxhj6urr1" path="res://assets/textures/truck.png" id="3_2jfjj"]
 [ext_resource type="Shader" path="res://shaders/truck_fade.gdshader" id="4_shader"]
 

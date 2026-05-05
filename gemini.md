@@ -7,7 +7,7 @@
 4. **Future Extensibility**: The architecture can support adding more animated windows.
 
 ## Architecture
-- **`Main.tscn`** — Contains an invisible `Node2D` manager and a child `Window` node with a `Sprite2D` truck.
+- **`levels/main.tscn`** — Contains an invisible `Node2D` manager and a child `Window` node with a `Sprite2D` truck.
 - **`main.gd`** — Hides the main Godot window off-screen, applies the Godot #71642 transparency workaround to the sub-window, and runs the movement/direction logic in `_process()`.
 - **Renderer**: `gl_compatibility` (OpenGL). Required because Vulkan (`forward_plus`) fails to negotiate per-pixel transparency with Windows DWM on certain hardware.
 
