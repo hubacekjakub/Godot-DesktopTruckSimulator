@@ -15,10 +15,13 @@ var _moving: bool = false
 var _desktop_rect: Rect2i
 var _usable_rect: Rect2i
 var _fade_padding: int = 200
-var _safety_margin: int = 30 # Distance from edge where truck is fully invisible
+var _safety_margin: int = 60 # Distance from edge where truck is fully invisible
+var _bob_tween: Tween
 
 @onready var _sub_window: Window = $Window
-@onready var _truck_sprite: Sprite2D = $Window/Truck
+@onready var _truck: Node2D = $Window/Truck
+@onready var _truck_body: Sprite2D = $Window/Truck/TruckBody
+@onready var _truck_wheels: Sprite2D = $Window/Truck/TruckWheels
 @onready var _wheel_emitters: Array[GPUParticles2D] = [
 	$Window/Truck/WheelDust,
 	$Window/Truck/WheelDust2,
@@ -31,46 +34,37 @@ func _ready() -> void:
 	# Hide the main application window off-screen.
 	var main_window = get_window()
 	main_window.position = Vector2i(-10000, -10000)
-	
+
 	# Master Fix: Set main window transparency to ensure sub-windows can render transparently.
 	main_window.transparent = true
 	main_window.transparent_bg = true
 
 	# Ensure the sub-window is not transient to the hidden main window.
 	_sub_window.transient = false
-	
+
 	_update_desktop_bounds()
 
 	# Workaround for Godot bug #71642 on Windows:
-	# The OS ignores transparency flags set before the native window handle is created.
 	_sub_window.transparent = false
 	_sub_window.transparent_bg = false
-	
-	# Stability wait for release builds
-	await get_tree().process_frame
-	await get_tree().process_frame
-	await get_tree().process_frame
-	await get_tree().process_frame
-	await get_tree().create_timer(1.0).timeout
 
-	# Explicitly set flags via DisplayServer to ensure OS-level transparency is enabled.
-	var win_id = _sub_window.get_window_id()
-	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_TRANSPARENT, true, win_id)
-	
+	await get_tree().process_frame
+	await get_tree().process_frame
+
+	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_TRANSPARENT, true, _sub_window.get_window_id())
+
 	_sub_window.transparent = true
 	_sub_window.transparent_bg = true
 
-	# Shrink window to truck size to minimize OS-level multi-monitor glitches.
-	# Current asset: assets/textures/truck.png (256x256 px)
-	# Current scale: 1.5x (Resulting in 384x384 px)
-	var truck_size = _truck_sprite.get_rect().size * _truck_sprite.scale
-	_sub_window.size = Vector2i(int(truck_size.x), int(truck_size.y))
-	_truck_sprite.position = _sub_window.size / 2.0
-
+	# Share the same material instance if they aren't already
+	_truck_wheels.material = _truck_body.material
 	_wait_timer.timeout.connect(_on_wait_timer_timeout)
 
 	# Start the first pass
 	_start_pass()
+
+	# Start the bobbing
+	_start_bobbing()
 
 
 func _process(delta: float) -> void:
@@ -80,15 +74,16 @@ func _process(delta: float) -> void:
 	_current_x += _speed * _direction * delta
 	_sub_window.position.x = int(_current_x)
 
-	# Update shader uniforms for per-pixel global fade.
-	var shader_material = _truck_sprite.material as ShaderMaterial
-	if shader_material:
-		shader_material.set_shader_parameter("window_x", float(_current_x))
-		shader_material.set_shader_parameter("window_width", float(_sub_window.size.x))
-		shader_material.set_shader_parameter("screen_left", float(_usable_rect.position.x))
-		shader_material.set_shader_parameter("screen_right", float(_usable_rect.position.x + _usable_rect.size.x))
-		shader_material.set_shader_parameter("fade_margin", float(_fade_padding))
-		shader_material.set_shader_parameter("safety_margin", float(_safety_margin))
+	# Update shader uniforms on the shared material.
+	# Since they share the material, we only need to set it on one.
+	var mat = _truck_body.material as ShaderMaterial
+	if mat:
+		mat.set_shader_parameter("window_x", float(_current_x))
+		mat.set_shader_parameter("window_width", float(_sub_window.size.x))
+		mat.set_shader_parameter("screen_left", float(_usable_rect.position.x))
+		mat.set_shader_parameter("screen_right", float(_usable_rect.position.x + _usable_rect.size.x))
+		mat.set_shader_parameter("fade_margin", float(_fade_padding))
+		mat.set_shader_parameter("safety_margin", float(_safety_margin))
 
 	# Check if fully off-screen using usable bounds + safety margin.
 	if _direction == 1 and _current_x > _usable_rect.position.x + _usable_rect.size.x - _safety_margin:
@@ -108,26 +103,26 @@ func _start_pass() -> void:
 	else:
 		_current_x = float(_usable_rect.position.x + _usable_rect.size.x - _safety_margin)
 
-	# Flip the entire sprite scale so children (particles) flip too.
-	_truck_sprite.scale.x = abs(_truck_sprite.scale.x) * _direction
-	
-	for emitter in _wheel_emitters:
-		emitter.emitting = true
+	_truck.scale.x = abs(_truck.scale.x) * _direction
 
-	_sub_window.position = Vector2i(
-		int(_current_x),
-		_usable_rect.position.y + _usable_rect.size.y - _sub_window.size.y - vertical_offset
-	)
+	for emitter in _wheel_emitters:
+		if emitter: emitter.emitting = true
+
+	var target_y = _usable_rect.position.y + _usable_rect.size.y - _sub_window.size.y - vertical_offset
+	_sub_window.position = Vector2i(int(_current_x), target_y)
+	print("Pass started. Direction: ", _direction, " Position: ", _sub_window.position, " Speed: ", _speed)
 	_moving = true
 
 
 ## Stops movement and starts a random wait before the next pass.
 func _begin_wait() -> void:
 	_moving = false
+
 	for emitter in _wheel_emitters:
 		emitter.emitting = false
+
 	_sub_window.position = Vector2i(-10000, -10000)
-	
+
 	_wait_timer.wait_time = randf_range(5.0, 15.0)
 	_wait_timer.start()
 
@@ -145,3 +140,10 @@ func _update_desktop_bounds() -> void:
 func _on_wait_timer_timeout() -> void:
 	_direction *= -1
 	_start_pass()
+
+
+func _start_bobbing() -> void:
+	_bob_tween = create_tween().set_loops()
+	# Bob up and down by 2 pixels over 0.2 seconds
+	_bob_tween.tween_property(_truck_body, "position:y", -4.0, 0.4).set_trans(Tween.TRANS_SINE)
+	_bob_tween.tween_property(_truck_body, "position:y", 0.0, 0.1).set_trans(Tween.TRANS_SINE)
