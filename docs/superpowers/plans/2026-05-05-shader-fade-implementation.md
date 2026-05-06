@@ -45,11 +45,11 @@ git commit -m "feat: add truck fade shader"
 ### Task 2: Apply Shader to Truck Sprite
 
 **Files:**
-- Modify: `levels/Main.tscn`
+- Modify: `levels/main.tscn`
 
 - [ ] **Step 1: Add ShaderMaterial to Truck Sprite**
 
-Load `levels/Main.tscn` and update the `Truck` node to use the new shader.
+Load `levels/main.tscn` and update the `Truck` node to use the new shader.
 
 ```tscn
 [node name="Truck" type="Sprite2D" parent="Window" unique_id=312345669]
@@ -65,7 +65,7 @@ shader_parameter/fade_margin = 0.1
 - [ ] **Step 2: Commit scene changes**
 
 ```bash
-git add levels/Main.tscn
+git add levels/main.tscn
 git commit -m "feat: apply fade shader material to truck"
 ```
 

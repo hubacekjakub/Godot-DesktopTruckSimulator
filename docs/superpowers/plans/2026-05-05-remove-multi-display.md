@@ -13,7 +13,7 @@
 ### Task 1: Modify Desktop Bounds Calculation
 
 **Files:**
-- Modify: `scripts/Main.gd`
+- Modify: `scripts/main.gd`
 
 - [ ] **Step 1: Update `_update_desktop_bounds()` to only use screen 0**
 
@@ -30,7 +30,7 @@ func _update_desktop_bounds() -> void:
 - [ ] **Step 2: Commit changes**
 
 ```bash
-git add scripts/Main.gd
+git add scripts/main.gd
 git commit -m "feat: restrict truck movement to primary display"
 ```
 
