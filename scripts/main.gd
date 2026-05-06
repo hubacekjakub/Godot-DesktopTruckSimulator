@@ -19,6 +19,11 @@ var _safety_margin: int = 30 # Distance from edge where truck is fully invisible
 
 @onready var _sub_window: Window = $Window
 @onready var _truck_sprite: Sprite2D = $Window/Truck
+@onready var _wheel_emitters: Array[GPUParticles2D] = [
+	$Window/Truck/WheelDust,
+	$Window/Truck/WheelDust2,
+	$Window/Truck/WheelDust3
+]
 @onready var _wait_timer: Timer = $WaitTimer
 
 
@@ -103,7 +108,11 @@ func _start_pass() -> void:
 	else:
 		_current_x = float(_usable_rect.position.x + _usable_rect.size.x - _safety_margin)
 
-	_truck_sprite.flip_h = (_direction == -1)
+	# Flip the entire sprite scale so children (particles) flip too.
+	_truck_sprite.scale.x = abs(_truck_sprite.scale.x) * _direction
+	
+	for emitter in _wheel_emitters:
+		emitter.emitting = true
 
 	_sub_window.position = Vector2i(
 		int(_current_x),
@@ -115,6 +124,8 @@ func _start_pass() -> void:
 ## Stops movement and starts a random wait before the next pass.
 func _begin_wait() -> void:
 	_moving = false
+	for emitter in _wheel_emitters:
+		emitter.emitting = false
 	_sub_window.position = Vector2i(-10000, -10000)
 	
 	_wait_timer.wait_time = randf_range(5.0, 15.0)

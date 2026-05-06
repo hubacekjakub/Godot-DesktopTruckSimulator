@@ -1,12 +1,35 @@
-[gd_scene load_steps=5 format=3 uid="uid://djvq1dkxxkspr"]
+[gd_scene format=3 uid="uid://djvq1dkxxkspr"]
 
-[ext_resource type="Script" uid="uid://cd8ynd3ph4u52" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="Script" uid="uid://dwhuop3oocpeu" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Texture2D" uid="uid://d03fjxhj6urr1" path="res://assets/textures/truck.png" id="3_2jfjj"]
-[ext_resource type="Shader" path="res://shaders/truck_fade.gdshader" id="4_shader"]
+[ext_resource type="Shader" uid="uid://dc4654jbjvfce" path="res://shaders/truck_fade.gdshader" id="4_shader"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_fade"]
 shader = ExtResource("4_shader")
+shader_parameter/window_x = 0.0
+shader_parameter/window_width = 0.0
+shader_parameter/screen_left = 0.0
+shader_parameter/screen_right = 0.0
 shader_parameter/fade_margin = 0.1
+shader_parameter/safety_margin = 0.0
+
+[sub_resource type="Gradient" id="Gradient_dust"]
+offsets = PackedFloat32Array(0, 0.722222, 1)
+colors = PackedColorArray(0.611765, 0.545098, 0.435294, 0.745098, 0.505882, 0.447059, 0.34902, 0.470588, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_m6v4n"]
+gradient = SubResource("Gradient_dust")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_dust"]
+particle_flag_disable_z = true
+direction = Vector3(-1, -0.3, 0)
+spread = 15.0
+initial_velocity_min = 80.0
+initial_velocity_max = 120.0
+gravity = Vector3(0, 30, 0)
+scale_min = 2.0
+scale_max = 4.0
+color_ramp = SubResource("GradientTexture1D_m6v4n")
 
 [node name="Main" type="Node2D" unique_id=1808567993]
 script = ExtResource("1_main")
@@ -25,6 +48,27 @@ material = SubResource("ShaderMaterial_fade")
 position = Vector2(200, 150)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("3_2jfjj")
+
+[node name="WheelDust" type="GPUParticles2D" parent="Window/Truck" unique_id=887643496]
+position = Vector2(-58.000004, 3.333333)
+amount = 24
+lifetime = 0.6
+randomness = 0.3
+process_material = SubResource("ParticleProcessMaterial_dust")
+
+[node name="WheelDust2" type="GPUParticles2D" parent="Window/Truck" unique_id=1765579639]
+position = Vector2(-32.000004, 3.9999998)
+amount = 24
+lifetime = 0.6
+randomness = 0.3
+process_material = SubResource("ParticleProcessMaterial_dust")
+
+[node name="WheelDust3" type="GPUParticles2D" parent="Window/Truck" unique_id=1176814150]
+position = Vector2(46.666676, 3.3333383)
+amount = 24
+lifetime = 0.6
+randomness = 0.3
+process_material = SubResource("ParticleProcessMaterial_dust")
 
 [node name="WaitTimer" type="Timer" parent="." unique_id=239512109]
 one_shot = true
