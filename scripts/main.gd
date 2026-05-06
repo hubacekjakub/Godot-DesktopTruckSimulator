@@ -44,6 +44,7 @@ func _ready() -> void:
 	_log("Main: Desktop Rect: " + str(_desktop_rect))
 	_log("Main: Usable Rect: " + str(_usable_rect))
 	_log("Main: Screen Scale: " + str(DisplayServer.screen_get_scale(0)))
+	_log("Main: Transparency Supported by OS: " + str(DisplayServer.is_window_transparency_available()))
 
 	_sub_window.transparent = false
 	_sub_window.transparent_bg = false
@@ -53,11 +54,17 @@ func _ready() -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
 	await get_tree().process_frame
-	await get_tree().create_timer(0.5).timeout
+	await get_tree().create_timer(1.0).timeout # Longer wait for release builds
 
+	# Explicitly set flags via DisplayServer as a fallback for the property setters
+	var win_id = _sub_window.get_window_id()
+	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_TRANSPARENT, true, win_id)
+	
 	_sub_window.transparent = true
 	_sub_window.transparent_bg = true
-	_log("Main: Transparency workaround applied (extended wait)")
+	_log("Main: Transparency workaround applied (Explicit DisplayServer flag set)")
+	_log("Main: Sub-window transparent property: " + str(_sub_window.transparent))
+	_log("Main: Sub-window transparent_bg property: " + str(_sub_window.transparent_bg))
 
 	var truck_size = _truck_sprite.get_rect().size * _truck_sprite.scale
 	_sub_window.size = Vector2i(int(truck_size.x), int(truck_size.y))
