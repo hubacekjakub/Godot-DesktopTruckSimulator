@@ -44,7 +44,6 @@ jobs:
             ### 📥 Downloads
             - **Windows**: `.exe` file
             - **Linux**: `.x86_64` file
-            - **Web**: `.zip` file (extract and host on web server)
 
   # Deploy job - uploads builds to itch.io
   deploy_game:
