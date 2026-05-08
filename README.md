@@ -49,6 +49,19 @@ A cozy, minimalist desktop companion built with Godot 4.6. A small truck drives 
 - `shaders/truck_fade.gdshader`: The global edge-fade implementation.
 - `assets/`: Textures, fonts, and other resources.
 
+### Troubleshooting
+
+#### Missing Resources / "Failed Loading" Errors
+If you see errors about missing `.ctex` files or failed loading of textures:
+1.  **Git LFS**: This project uses Git LFS for binary assets (images, GIFs). Ensure you have [Git LFS](https://git-lfs.github.com/) installed and run:
+    ```bash
+    git lfs pull
+    ```
+2.  **Re-import**: Delete the `.godot` folder in the project root and reopen the project in Godot. This forces a clean re-import of all assets.
+
+#### UID Warnings
+If you see "invalid UID" warnings in the console, they can be safely ignored as Godot falls back to file paths. We've removed UIDs from main scenes to minimize these, but Godot may regenerate them locally.
+
 ## 📝 License
 
 This project is licensed under the [MIT License](LICENSE).
