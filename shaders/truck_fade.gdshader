@@ -24,7 +24,7 @@ void fragment() {
 	// 1.0 alpha at (screen_right - safety_margin - fade_margin), 0.0 alpha at (screen_right - safety_margin)
 	alpha *= (1.0 - smoothstep(screen_right - safety_margin - fade_margin, screen_right - safety_margin, pixel_global_x));
 
-	COLOR = tex_color;
+	COLOR = tex_color * COLOR;
 	COLOR.a *= alpha;
 }
 
