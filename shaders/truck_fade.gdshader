@@ -11,7 +11,7 @@ void fragment() {
 	vec4 tex_color = texture(TEXTURE, UV);
 	
 	// Calculate the global X position of this pixel
-	// SCREEN_UV.x is 0.0 to 1.0 within the sub-window
+	// SCREEN_UV.x is 0.0 to 1.0 within the window viewport
 	float pixel_global_x = window_x + (SCREEN_UV.x * window_width);
 
 	float alpha = 1.0;

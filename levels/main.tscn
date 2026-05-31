@@ -26,34 +26,25 @@ scale_min = 2.0
 scale_max = 4.0
 color_ramp = SubResource("GradientTexture1D_m6v4n")
 
-[node name="Main" type="Node2D" unique_id=1808567993]
+[node name="Main" type="Node2D"]
 script = ExtResource("1_main")
 
-[node name="Window" type="Window" parent="." unique_id=1978096911]
-transparent_bg = true
-oversampling_override = 1.0
-size = Vector2i(384, 384)
-borderless = true
-always_on_top = true
-transparent = true
-unfocusable = true
-
-[node name="Truck" type="Node2D" parent="Window" unique_id=426208508]
+[node name="Truck" type="Node2D" parent="."]
 position = Vector2(192, 192)
 
-[node name="TruckBody" type="Sprite2D" parent="Window/Truck" unique_id=312345669]
+[node name="TruckBody" type="Sprite2D" parent="Truck"]
 material = SubResource("ShaderMaterial_fade")
 position = Vector2(0, 0)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("3_m1504")
 
-[node name="TruckWheels" type="Sprite2D" parent="Window/Truck" unique_id=1792160535]
+[node name="TruckWheels" type="Sprite2D" parent="Truck"]
 material = SubResource("ShaderMaterial_fade")
 position = Vector2(0, 0)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("4_ifaiv")
 
-[node name="WheelDust" type="GPUParticles2D" parent="Window/Truck" unique_id=887643496]
+[node name="WheelDust" type="GPUParticles2D" parent="Truck"]
 position = Vector2(-87, 5)
 scale = Vector2(1.5, 1.5)
 amount = 24
@@ -61,7 +52,7 @@ lifetime = 0.6
 randomness = 0.3
 process_material = SubResource("ParticleProcessMaterial_dust")
 
-[node name="WheelDust2" type="GPUParticles2D" parent="Window/Truck" unique_id=1765579639]
+[node name="WheelDust2" type="GPUParticles2D" parent="Truck"]
 position = Vector2(-48, 6)
 scale = Vector2(1.5, 1.5)
 amount = 24
@@ -69,7 +60,7 @@ lifetime = 0.6
 randomness = 0.3
 process_material = SubResource("ParticleProcessMaterial_dust")
 
-[node name="WheelDust3" type="GPUParticles2D" parent="Window/Truck" unique_id=1176814150]
+[node name="WheelDust3" type="GPUParticles2D" parent="Truck"]
 position = Vector2(70, 5)
 scale = Vector2(1.5, 1.5)
 amount = 24
@@ -77,5 +68,5 @@ lifetime = 0.6
 randomness = 0.3
 process_material = SubResource("ParticleProcessMaterial_dust")
 
-[node name="WaitTimer" type="Timer" parent="." unique_id=239512109]
+[node name="WaitTimer" type="Timer" parent="."]
 one_shot = true
