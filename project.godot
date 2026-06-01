@@ -33,3 +33,15 @@ renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 ;environment/defaults/default_clear_color=Color(0, 0, 0, 0)
 viewport/transparent_background=true
+
+[autoload]
+
+SignalBus="*res://autoloads/signal_bus.gd"
+ConfigManager="*res://autoloads/config_manager.gd"
+WindowManager="*res://autoloads/window_manager.gd"
+Global="*res://autoloads/global.gd"
+DebugManager="*res://autoloads/debug_manager.gd"
+
+
+
+

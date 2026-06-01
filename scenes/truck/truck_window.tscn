@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/truck/truck_window.gd" id="1_window"]
+[ext_resource type="PackedScene" path="res://scenes/truck/truck_entity.tscn" id="2_entity"]
+
+[node name="TruckWindow" type="Window"]
+transparent = true
+initial_position = 1
+size = Vector2i(384, 384)
+visible = false
+borderless = true
+always_on_top = true
+transparent_bg = true
+unfocusable = true
+mouse_passthrough = true
+script = ExtResource("1_window")
+
+[node name="TruckEntity" parent="." instance=ExtResource("2_entity")]
