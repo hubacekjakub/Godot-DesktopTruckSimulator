@@ -1,0 +1,47 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/debug/debug_panel.gd" id="1_panel"]
+
+[node name="DebugPanel" type="Window"]
+title = "Debug Control Panel"
+size = Vector2i(280, 240)
+script = ExtResource("1_panel")
+
+[node name="Panel" type="PanelContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="VBox" type="VBoxContainer" parent="Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="Panel/Margin/VBox"]
+layout_mode = 2
+text = "Debug Control Panel"
+horizontal_alignment = 1
+
+[node name="BtnMove" type="Button" parent="Panel/Margin/VBox"]
+layout_mode = 2
+text = "Stop Truck"
+
+[node name="BtnPortal" type="Button" parent="Panel/Margin/VBox"]
+layout_mode = 2
+text = "Open Debug Portal"
+
+[node name="BtnColor" type="Button" parent="Panel/Margin/VBox"]
+layout_mode = 2
+text = "Randomize Color"
+
+[connection signal="pressed" from="Panel/Margin/VBox/BtnMove" to="." method="_on_btn_move_pressed"]
+[connection signal="pressed" from="Panel/Margin/VBox/BtnPortal" to="." method="_on_btn_portal_pressed"]
+[connection signal="pressed" from="Panel/Margin/VBox/BtnColor" to="." method="_on_btn_color_pressed"]

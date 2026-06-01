@@ -13,24 +13,35 @@ config_version=5
 config/name="Godot-DesktopTruckSimulator"
 config/description="A simple desktop truck animation."
 run/main_scene="res://levels/main.tscn"
-config/features=PackedStringArray("4.6", "4.6.1", "GL Compatibility")
+config/features=PackedStringArray("4.6", "GL Compatibility")
 boot_splash/show_image=false
 config/icon="res://icon.svg"
 
 [display]
 
-window/size/viewport_width=300
-window/size/viewport_height=300
+window/size/viewport_width=384
+window/size/viewport_height=384
 window/size/borderless=true
 window/size/always_on_top=true
 window/size/transparent=true
 window/subwindows/embed_subwindows=false
 window/per_pixel_transparency/allowed=true
-window/size/mouse_passthrough=true
 
 [rendering]
 
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
-environment/defaults/default_clear_color=Color(0, 0, 0, 0)
+;environment/defaults/default_clear_color=Color(0, 0, 0, 0)
 viewport/transparent_background=true
+
+[autoload]
+
+SignalBus="*res://autoloads/signal_bus.gd"
+ConfigManager="*res://autoloads/config_manager.gd"
+WindowManager="*res://autoloads/window_manager.gd"
+Global="*res://autoloads/global.gd"
+DebugManager="*res://autoloads/debug_manager.gd"
+
+
+
+

@@ -1,0 +1,67 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scenes/truck/truck_entity.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/textures/truck_body.png" id="2_body"]
+[ext_resource type="Texture2D" path="res://assets/textures/truck_wheels.png" id="3_wheels"]
+[ext_resource type="Shader" path="res://shaders/truck_fade.gdshader" id="4_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fade"]
+shader = ExtResource("4_shader")
+
+[sub_resource type="Gradient" id="Gradient_dust"]
+offsets = PackedFloat32Array(0, 0.722222, 1)
+colors = PackedColorArray(0.611765, 0.545098, 0.435294, 0.745098, 0.505882, 0.447059, 0.34902, 0.470588, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_m6v4n"]
+gradient = SubResource("Gradient_dust")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_dust"]
+particle_flag_disable_z = true
+direction = Vector3(-1, -0.3, 0)
+spread = 15.0
+initial_velocity_min = 80.0
+initial_velocity_max = 120.0
+gravity = Vector3(0, 30, 0)
+scale_min = 2.0
+scale_max = 4.0
+color_ramp = SubResource("GradientTexture1D_m6v4n")
+
+[node name="TruckEntity" type="Node2D"]
+position = Vector2(192, 192)
+script = ExtResource("1_script")
+
+[node name="TruckBody" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_fade")
+position = Vector2(0, 0)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("2_body")
+
+[node name="TruckWheels" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_fade")
+position = Vector2(0, 0)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("3_wheels")
+
+[node name="WheelDust" type="GPUParticles2D" parent="."]
+position = Vector2(-87, 5)
+scale = Vector2(1.5, 1.5)
+amount = 24
+lifetime = 0.6
+randomness = 0.3
+process_material = SubResource("ParticleProcessMaterial_dust")
+
+[node name="WheelDust2" type="GPUParticles2D" parent="."]
+position = Vector2(-48, 6)
+scale = Vector2(1.5, 1.5)
+amount = 24
+lifetime = 0.6
+randomness = 0.3
+process_material = SubResource("ParticleProcessMaterial_dust")
+
+[node name="WheelDust3" type="GPUParticles2D" parent="."]
+position = Vector2(70, 5)
+scale = Vector2(1.5, 1.5)
+amount = 24
+lifetime = 0.6
+randomness = 0.3
+process_material = SubResource("ParticleProcessMaterial_dust")
