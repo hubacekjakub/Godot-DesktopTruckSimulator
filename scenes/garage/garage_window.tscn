@@ -1,0 +1,38 @@
+[gd_scene format=3 uid="uid://by18wr1xlxnsg"]
+
+[ext_resource type="Script" uid="uid://jxv3nud3j322" path="res://scenes/garage/garage_window.gd" id="1_1sqgk"]
+
+[node name="GarageWindow" type="Window" unique_id=1069522743]
+transparent_bg = true
+oversampling_override = 1.0
+initial_position = 1
+size = Vector2i(300, 300)
+borderless = true
+always_on_top = true
+transparent = true
+unfocusable = true
+script = ExtResource("1_1sqgk")
+
+[node name="HFlowContainer" type="VFlowContainer" parent="." unique_id=1039793955]
+clip_contents = true
+anchors_preset = 13
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -52.5
+offset_right = 52.5
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Button" type="Button" parent="HFlowContainer" unique_id=220740100]
+layout_mode = 2
+text = "Hello Word	"
+
+[node name="Button2" type="Button" parent="HFlowContainer" unique_id=2105062593]
+layout_mode = 2
+text = "Hello Aagain"
+
+[node name="Button3" type="Button" parent="HFlowContainer" unique_id=1396737805]
+layout_mode = 2
+text = "Confirm"

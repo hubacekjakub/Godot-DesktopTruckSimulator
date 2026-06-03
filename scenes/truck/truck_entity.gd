@@ -26,30 +26,32 @@ var _multiplier_tween: Tween = null
 func _ready() -> void:
 	_center_x = position.x
 	_truck_wheels.material = _truck_body.material
-	
-	SignalBus.movement_toggle_requested.connect(_on_movement_toggle_requested)
+
+	SignalBus.truck_movement_stop_triggered.connect(_on_truck_movement_stop_triggered)
+	SignalBus.truck_movement_resume_triggered.connect(_on_truck_movement_resume_triggered)
+
 	SignalBus.truck_color_randomize_requested.connect(_on_color_randomize_requested)
-	
+
 	_start_bobbing()
 
 func _process(delta: float) -> void:
 	if not _moving:
 		return
-		
+
 	_logical_x += _speed * _direction * _speed_multiplier * delta
-	
+
 	# Update particle emitters and bobbing tween based on speed multiplier
 	for emitter in _wheel_emitters:
 		if is_instance_valid(emitter):
 			emitter.emitting = _moving and (_speed_multiplier > 0.1)
-			
+
 	if _bob_tween and _bob_tween.is_valid():
 		_bob_tween.set_speed_scale(_speed_multiplier)
-	
+
 	# Verify if driving has exited current monitor space
 	var rect: Rect2i = WindowManager.get_usable_rect()
 	var win_width: int = get_window().size.x
-	
+
 	if _direction == 1 and _logical_x > rect.position.x + rect.size.x:
 		_moving = false
 		SignalBus.truck_pass_completed.emit()
@@ -70,24 +72,23 @@ func spawn_truck(dir: int, spd: float) -> void:
 	_direction = dir
 	_speed = spd
 	_moving = true
-	
+
 	# Reset multiplier to full speed on fresh spawn
 	_speed_multiplier = 1.0
-	_target_multiplier = 1.0
 	if _multiplier_tween and _multiplier_tween.is_valid():
 		_multiplier_tween.kill()
-	
+
 	var rect: Rect2i = WindowManager.get_usable_rect()
 	var win_size: Vector2i = get_window().size
 	var vert_offset: int = ConfigManager.get_setting("TruckSettings", "vertical_offset", -192)
-	
+
 	_target_y = rect.position.y + rect.size.y - win_size.y - vert_offset
-	
+
 	if _direction == 1:
 		_logical_x = float(rect.position.x - win_size.x)
 	else:
 		_logical_x = float(rect.position.x + rect.size.x)
-		
+
 	scale.x = abs(scale.x) * _direction
 	visible = true
 	for emitter in _wheel_emitters:
@@ -101,23 +102,32 @@ func update_shader_parameters(window_x: float, window_width: float, screen_left:
 		mat.set_shader_parameter("window_width", window_width)
 		mat.set_shader_parameter("screen_left", screen_left)
 		mat.set_shader_parameter("screen_right", screen_right)
-		
+
 		# Set dynamic fade bounds configured next to EXE
 		var fade_margin: float = ConfigManager.get_setting("ShaderSettings", "fade_margin", 100.0)
 		var safety_margin: float = ConfigManager.get_setting("ShaderSettings", "safety_margin", 0.0)
 		mat.set_shader_parameter("fade_margin", fade_margin)
 		mat.set_shader_parameter("safety_margin", safety_margin)
 
-func _on_movement_toggle_requested(is_moving: bool) -> void:
-	_target_multiplier = 1.0 if is_moving else 0.0
-	
+func _on_truck_movement_stop_triggered() -> void:
+	_target_multiplier = 0.0
+
 	# Tween the speed multiplier smoothly to avoid any sudden jumping
 	if _multiplier_tween and _multiplier_tween.is_valid():
 		_multiplier_tween.kill()
 	_multiplier_tween = create_tween()
-	_multiplier_tween.tween_property(self, "_speed_multiplier", _target_multiplier, 1.5)\
-		.set_trans(Tween.TRANS_SINE)\
-		.set_ease(Tween.EASE_OUT)
+	_multiplier_tween.tween_property(self, "_speed_multiplier", _target_multiplier, 2.5).set_trans(Tween.TRANS_CIRC).set_ease(Tween.EASE_OUT)
+	_multiplier_tween.finished.connect(SignalBus.truck_movement_stop_finished.emit)
+
+func _on_truck_movement_resume_triggered() -> void:
+	_target_multiplier = 1.0
+
+	# Tween the speed multiplier smoothly to avoid any sudden jumping
+	if _multiplier_tween and _multiplier_tween.is_valid():
+		_multiplier_tween.kill()
+	_multiplier_tween = create_tween()
+	_multiplier_tween.tween_property(self, "_speed_multiplier", _target_multiplier,  1.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	_multiplier_tween.finished.connect(SignalBus.truck_movement_resume_finished.emit)
 
 func _on_color_randomize_requested() -> void:
 	if is_instance_valid(_truck_body):

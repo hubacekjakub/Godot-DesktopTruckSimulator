@@ -17,6 +17,15 @@ config/features=PackedStringArray("4.6", "GL Compatibility")
 boot_splash/show_image=false
 config/icon="res://icon.svg"
 
+[autoload]
+
+SignalBus="*res://autoloads/signal_bus.gd"
+ConfigManager="*res://autoloads/config_manager.gd"
+WindowManager="*res://autoloads/window_manager.gd"
+Global="*res://autoloads/global.gd"
+DebugManager="*res://autoloads/debug_manager.gd"
+Customization="*res://autoloads/customization.gd"
+
 [display]
 
 window/size/viewport_width=384
@@ -31,17 +40,4 @@ window/per_pixel_transparency/allowed=true
 
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
-;environment/defaults/default_clear_color=Color(0, 0, 0, 0)
 viewport/transparent_background=true
-
-[autoload]
-
-SignalBus="*res://autoloads/signal_bus.gd"
-ConfigManager="*res://autoloads/config_manager.gd"
-WindowManager="*res://autoloads/window_manager.gd"
-Global="*res://autoloads/global.gd"
-DebugManager="*res://autoloads/debug_manager.gd"
-
-
-
-
