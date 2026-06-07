@@ -16,6 +16,7 @@ func _ready() -> void:
 	SignalBus.truck_pass_completed.connect(_on_truck_pass_completed)
 	SignalBus.truck_movement_resume_triggered.connect(_on_truck_movement_resume_triggered)
 	SignalBus.truck_movement_stop_triggered.connect(_on_truck_movement_stop_triggered)
+	SignalBus.customization_finished.connect(_on_customization_finished)
 
 	# Instantiate the single persistent window at startup
 	_active_truck_window = WindowManager.spawn_window("res://scenes/truck/truck_window.tscn")
@@ -41,7 +42,7 @@ func start_next_pass() -> void:
 		_active_truck_window.initialize_truck(_direction, speed)
 
 		# Alternate direction for the next pass
-		_direction = -_direction
+		_direction = - _direction
 
 func _on_truck_pass_completed() -> void:
 	# Keep the window instance but hide it
@@ -67,3 +68,12 @@ func _on_truck_movement_stop_triggered() -> void:
 	var has_active_pass: bool = is_instance_valid(_active_truck_window) and _active_truck_window.visible
 	if has_active_pass:
 		_is_paused = true
+
+func _on_customization_finished() -> void:
+	SignalBus.truck_movement_resume_triggered.emit()
+
+## Returns the current screen bounds (position and size) of the active truck window
+func get_truck_rect() -> Rect2i:
+	if is_instance_valid(_active_truck_window):
+		return Rect2i(_active_truck_window.position, _active_truck_window.size)
+	return Rect2i()

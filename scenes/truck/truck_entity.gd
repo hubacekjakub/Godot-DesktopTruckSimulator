@@ -29,8 +29,12 @@ func _ready() -> void:
 
 	SignalBus.truck_movement_stop_triggered.connect(_on_truck_movement_stop_triggered)
 	SignalBus.truck_movement_resume_triggered.connect(_on_truck_movement_resume_triggered)
-
+	
 	SignalBus.truck_color_randomize_requested.connect(_on_color_randomize_requested)
+	
+	SignalBus.customization_color_changed.connect(_on_customization_color_changed)
+	SignalBus.customization_cabin_changed.connect(_on_customization_cabin_changed)
+	SignalBus.customization_wheels_changed.connect(_on_customization_wheels_changed)
 
 	_start_bobbing()
 
@@ -68,6 +72,9 @@ func get_target_y() -> int:
 func get_center_x() -> float:
 	return _center_x
 
+func get_truck_body_material() -> ShaderMaterial:
+	return _truck_body.material as ShaderMaterial
+
 func spawn_truck(dir: int, spd: float) -> void:
 	_direction = dir
 	_speed = spd
@@ -96,7 +103,7 @@ func spawn_truck(dir: int, spd: float) -> void:
 			emitter.emitting = true
 
 func update_shader_parameters(window_x: float, window_width: float, screen_left: float, screen_right: float) -> void:
-	var mat := _truck_body.material as ShaderMaterial
+	var mat := get_truck_body_material()
 	if mat:
 		mat.set_shader_parameter("window_x", window_x)
 		mat.set_shader_parameter("window_width", window_width)
@@ -105,9 +112,7 @@ func update_shader_parameters(window_x: float, window_width: float, screen_left:
 
 		# Set dynamic fade bounds configured next to EXE
 		var fade_margin: float = ConfigManager.get_setting("ShaderSettings", "fade_margin", 100.0)
-		var safety_margin: float = ConfigManager.get_setting("ShaderSettings", "safety_margin", 0.0)
 		mat.set_shader_parameter("fade_margin", fade_margin)
-		mat.set_shader_parameter("safety_margin", safety_margin)
 
 func _on_truck_movement_stop_triggered() -> void:
 	_target_multiplier = 0.0
@@ -116,7 +121,7 @@ func _on_truck_movement_stop_triggered() -> void:
 	if _multiplier_tween and _multiplier_tween.is_valid():
 		_multiplier_tween.kill()
 	_multiplier_tween = create_tween()
-	_multiplier_tween.tween_property(self, "_speed_multiplier", _target_multiplier, 2.5).set_trans(Tween.TRANS_CIRC).set_ease(Tween.EASE_OUT)
+	_multiplier_tween.tween_property(self , "_speed_multiplier", _target_multiplier, 2.5).set_trans(Tween.TRANS_CIRC).set_ease(Tween.EASE_OUT)
 	_multiplier_tween.finished.connect(SignalBus.truck_movement_stop_finished.emit)
 
 func _on_truck_movement_resume_triggered() -> void:
@@ -126,19 +131,41 @@ func _on_truck_movement_resume_triggered() -> void:
 	if _multiplier_tween and _multiplier_tween.is_valid():
 		_multiplier_tween.kill()
 	_multiplier_tween = create_tween()
-	_multiplier_tween.tween_property(self, "_speed_multiplier", _target_multiplier,  1.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	_multiplier_tween.tween_property(self , "_speed_multiplier", _target_multiplier, 1.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	_multiplier_tween.finished.connect(SignalBus.truck_movement_resume_finished.emit)
 
 func _on_color_randomize_requested() -> void:
 	if is_instance_valid(_truck_body):
-		_truck_body.self_modulate = Color(
-			randf_range(0.2, 1.0),
-			randf_range(0.2, 1.0),
-			randf_range(0.2, 1.0),
-			1.0
-		)
+		var mat := get_truck_body_material()
+		if mat:
+			var new_color = Color(
+				randf_range(0.2, 1.0),
+				randf_range(0.2, 1.0),
+				randf_range(0.2, 1.0),
+				1.0
+			)
+			mat.set_shader_parameter("paint_color", new_color)
 
-func _start_bobbing() -> void:
+func _start_bobbing() -> void:    
 	_bob_tween = create_tween().set_loops()
-	_bob_tween.tween_property(_truck_body, "position:y", -4.0, 0.4).set_trans(Tween.TRANS_SINE)
-	_bob_tween.tween_property(_truck_body, "position:y", 0.0, 0.1).set_trans(Tween.TRANS_SINE)
+	
+	# Tween a custom method instead of the property directly
+	_bob_tween.tween_method(_update_bob_position, 0.0, -4.0, 0.4).set_trans(Tween.TRANS_SINE)
+	_bob_tween.tween_method(_update_bob_position, -4.0, 0.0, 0.1).set_trans(Tween.TRANS_SINE)
+
+func _update_bob_position(value: float) -> void:
+	# round() forces the truck to lock strictly to whole pixel boundaries
+	_truck_body.position.y = round(value)
+
+func _on_customization_color_changed(color: Color) -> void:
+	var mat := get_truck_body_material()
+	if mat:
+		mat.set_shader_parameter("paint_color", color)
+
+func _on_customization_cabin_changed(cabin_id: int) -> void:
+	#TODO: Change the cabin
+	pass
+
+func _on_customization_wheels_changed(wheel_id: int) -> void:
+	#TODO: Change the wheels
+	pass
