@@ -19,7 +19,7 @@ func _on_btn_move_pressed() -> void:
 	_truck_moving = not _truck_moving
 	btn_move.text = "Start Truck" if not _truck_moving else "Stop Truck"
 	if _truck_moving:
-		SignalBus.truck_movement_resume_triggered.emit()
+		SignalBus.customization_finished.emit()
 	else:
 		SignalBus.truck_movement_stop_triggered.emit()
 
