@@ -4,8 +4,3 @@
 
 [node name="Main" type="Node2D" unique_id=1670047497]
 script = ExtResource("1_main")
-
-[node name="Window" type="Window" parent="." unique_id=2126113532]
-oversampling_override = 1.0
-position = Vector2i(150, 150)
-size = Vector2i(400, 200)

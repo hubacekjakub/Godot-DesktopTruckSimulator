@@ -2,18 +2,18 @@ extends Window
 class_name TruckWindow
 ## OS window container that clamps coordinates to target monitors.
 
-@onready var _entity: Node2D = $TruckEntity
+@onready var _entity: TruckEntity = $TruckEntity
 
 var _is_initialized: bool = false
 
 func _ready() -> void:
-	borderless = false
+	borderless = true
 	unresizable = true
 	always_on_top = true
 	unfocusable = true
 	mouse_passthrough = true
 	gui_embed_subwindows = false
-	canvas_cull_mask = 1  # Visual elements only
+	canvas_cull_mask = 1 # Visual elements only
 
 	# Window starts off-screen to avoid transparency flash
 	position = Vector2i(-10000, -10000)
@@ -32,7 +32,7 @@ func _ready() -> void:
 	transparent_bg = true
 
 	# Emit signal to let DebugManager link the world_2d and track viewport
-	SignalBus.truck_spawned.emit(self)
+	SignalBus.truck_spawned.emit(self )
 
 	# Mark as fully initialized
 	_is_initialized = true
