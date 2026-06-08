@@ -3,6 +3,8 @@
 [ext_resource type="Script" uid="uid://jxv3nud3j322" path="res://scenes/garage/garage_window.gd" id="1_1sqgk"]
 [ext_resource type="Texture2D" uid="uid://b46emof7amhmf" path="res://assets/textures/control_panel.png" id="2_4bd47"]
 [ext_resource type="Texture2D" uid="uid://cqpjji5kd5o7f" path="res://assets/textures/control_panel_button.png" id="3_btn_tex"]
+[ext_resource type="Texture2D" uid="uid://ia5xmrcp6fxj" path="res://assets/textures/control_panel_arrow_left.png" id="3_ysxv4"]
+[ext_resource type="Texture2D" uid="uid://dfch50ixfo734" path="res://assets/textures/control_panel_arrow_right.png" id="4_pnia3"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_panel"]
 texture = ExtResource("2_4bd47")
@@ -55,16 +57,17 @@ theme_override_styles/panel = SubResource("StyleBoxTexture_panel")
 [node name="MarginContainer" type="MarginContainer" parent="PanelContainer" unique_id=1235324940]
 layout_mode = 2
 theme_override_constants/margin_left = 28
-theme_override_constants/margin_top = 18
+theme_override_constants/margin_top = 22
 theme_override_constants/margin_right = 28
 theme_override_constants/margin_bottom = 12
 
 [node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer" unique_id=36432608]
 layout_mode = 2
+theme_override_constants/separation = 5
 
 [node name="VBoxOptions" type="VBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer" unique_id=241474466]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 5
 
 [node name="HBoxColor" type="HBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions" unique_id=663928025]
 layout_mode = 2
@@ -72,23 +75,32 @@ layout_mode = 2
 [node name="Label" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxColor" unique_id=477363192]
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 24
 text = "Color:"
 
 [node name="PreviousColor" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxColor" unique_id=1651526078]
 custom_minimum_size = Vector2(28, 0)
 layout_mode = 2
-text = "<"
+icon = ExtResource("3_ysxv4")
+icon_alignment = 1
 
 [node name="CounterColor" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxColor" unique_id=1383577313]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 24
 text = "1/6"
 horizontal_alignment = 1
 
 [node name="NextColor" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxColor" unique_id=1287808571]
 custom_minimum_size = Vector2(28, 0)
 layout_mode = 2
-text = ">"
+icon = ExtResource("4_pnia3")
+icon_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions" unique_id=1406100839]
+layout_mode = 2
 
 [node name="HBoxCabin" type="HBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions" unique_id=1954883761]
 layout_mode = 2
@@ -96,18 +108,23 @@ layout_mode = 2
 [node name="Label" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxCabin" unique_id=1689346578]
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 24
 text = "Cabin:"
 
 [node name="PreviousCabin" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxCabin" unique_id=754268874]
 custom_minimum_size = Vector2(28, 0)
 layout_mode = 2
 disabled = true
-text = "<"
+icon = ExtResource("3_ysxv4")
+icon_alignment = 1
 
 [node name="CounterCabin" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxCabin" unique_id=806861122]
 modulate = Color(0.6, 0.6, 0.6, 1)
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 24
 text = "Default"
 horizontal_alignment = 1
 
@@ -115,7 +132,11 @@ horizontal_alignment = 1
 custom_minimum_size = Vector2(28, 0)
 layout_mode = 2
 disabled = true
-text = ">"
+icon = ExtResource("4_pnia3")
+icon_alignment = 1
+
+[node name="HSeparator2" type="HSeparator" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions" unique_id=278453635]
+layout_mode = 2
 
 [node name="HBoxWheels" type="HBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions" unique_id=554480762]
 layout_mode = 2
@@ -123,18 +144,23 @@ layout_mode = 2
 [node name="Label" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxWheels" unique_id=274594040]
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 24
 text = "Wheels:"
 
 [node name="PreviousWheels" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxWheels" unique_id=1531243176]
 custom_minimum_size = Vector2(28, 0)
 layout_mode = 2
 disabled = true
-text = "<"
+icon = ExtResource("3_ysxv4")
+icon_alignment = 1
 
 [node name="CounterWheels" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxWheels" unique_id=688161314]
 modulate = Color(0.6, 0.6, 0.6, 1)
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 24
 text = "Default"
 horizontal_alignment = 1
 
@@ -142,12 +168,18 @@ horizontal_alignment = 1
 custom_minimum_size = Vector2(28, 0)
 layout_mode = 2
 disabled = true
-text = ">"
+icon = ExtResource("4_pnia3")
+icon_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="PanelContainer/MarginContainer/VBoxContainer" unique_id=225087248]
+layout_mode = 2
 
 [node name="Confirm" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer" unique_id=901871844]
 custom_minimum_size = Vector2(100, 32)
 layout_mode = 2
 size_flags_horizontal = 4
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 22
 theme_override_styles/normal = SubResource("StyleBoxTexture_btn")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_pressed")
 theme_override_styles/hover = SubResource("StyleBoxTexture_btn_hover")
