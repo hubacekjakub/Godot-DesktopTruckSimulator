@@ -1,12 +1,21 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene format=3 uid="uid://ds65xgo1qceny"]
 
-[ext_resource type="Script" path="res://scenes/truck/truck_entity.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/textures/truck_body.png" id="2_body"]
-[ext_resource type="Texture2D" path="res://assets/textures/truck_wheels.png" id="3_wheels"]
-[ext_resource type="Shader" path="res://shaders/truck_fade.gdshader" id="4_shader"]
+[ext_resource type="Script" uid="uid://bm6df77cjmitc" path="res://scenes/truck/truck_entity.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://wm74fdmwt0bb" path="res://assets/textures/truck_body.png" id="2_body"]
+[ext_resource type="Texture2D" uid="uid://dp80sjfbnlmph" path="res://assets/textures/truck_wheels.png" id="3_wheels"]
+[ext_resource type="Shader" uid="uid://drxjnprj04ob8" path="res://shaders/truck_fade.gdshader" id="4_shader"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_fade"]
 shader = ExtResource("4_shader")
+shader_parameter/window_x = 0.0
+shader_parameter/window_width = 1.0
+shader_parameter/screen_left = 0.0
+shader_parameter/screen_right = 1920.0
+shader_parameter/fade_margin = 200.0
+shader_parameter/safety_margin = 60.0
+shader_parameter/target_color = Color(0.92156863, 0.92941177, 0.9137255, 1)
+shader_parameter/paint_color = Color(0.92156863, 0.92941177, 0.9137255, 1)
+shader_parameter/enable_fade = false
 
 [sub_resource type="Gradient" id="Gradient_dust"]
 offsets = PackedFloat32Array(0, 0.722222, 1)
@@ -26,23 +35,23 @@ scale_min = 2.0
 scale_max = 4.0
 color_ramp = SubResource("GradientTexture1D_m6v4n")
 
-[node name="TruckEntity" type="Node2D"]
+[node name="TruckEntity" type="Node2D" unique_id=792951467]
 position = Vector2(192, 192)
 script = ExtResource("1_script")
 
-[node name="TruckBody" type="Sprite2D" parent="."]
+[node name="TruckBody" type="Sprite2D" parent="." unique_id=2053068222]
+texture_filter = 1
 material = SubResource("ShaderMaterial_fade")
-position = Vector2(0, 0)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("2_body")
 
-[node name="TruckWheels" type="Sprite2D" parent="."]
+[node name="TruckWheels" type="Sprite2D" parent="." unique_id=1053342362]
+texture_filter = 1
 material = SubResource("ShaderMaterial_fade")
-position = Vector2(0, 0)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("3_wheels")
 
-[node name="WheelDust" type="GPUParticles2D" parent="."]
+[node name="WheelDust" type="GPUParticles2D" parent="." unique_id=522415731]
 position = Vector2(-87, 5)
 scale = Vector2(1.5, 1.5)
 amount = 24
@@ -50,7 +59,7 @@ lifetime = 0.6
 randomness = 0.3
 process_material = SubResource("ParticleProcessMaterial_dust")
 
-[node name="WheelDust2" type="GPUParticles2D" parent="."]
+[node name="WheelDust2" type="GPUParticles2D" parent="." unique_id=1008172147]
 position = Vector2(-48, 6)
 scale = Vector2(1.5, 1.5)
 amount = 24
@@ -58,7 +67,7 @@ lifetime = 0.6
 randomness = 0.3
 process_material = SubResource("ParticleProcessMaterial_dust")
 
-[node name="WheelDust3" type="GPUParticles2D" parent="."]
+[node name="WheelDust3" type="GPUParticles2D" parent="." unique_id=767972643]
 position = Vector2(70, 5)
 scale = Vector2(1.5, 1.5)
 amount = 24

@@ -1,140 +1,156 @@
 [gd_scene format=3 uid="uid://by18wr1xlxnsg"]
 
 [ext_resource type="Script" uid="uid://jxv3nud3j322" path="res://scenes/garage/garage_window.gd" id="1_1sqgk"]
+[ext_resource type="Texture2D" uid="uid://b46emof7amhmf" path="res://assets/textures/control_panel.png" id="2_4bd47"]
+[ext_resource type="Texture2D" uid="uid://cqpjji5kd5o7f" path="res://assets/textures/control_panel_button.png" id="3_btn_tex"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
-bg_color = Color(0.352941, 0.478431, 0.541176, 1)
-border_width_left = 4
-border_width_top = 4
-border_width_right = 4
-border_width_bottom = 4
-border_color = Color(0.180392, 0.223529, 0.25098, 1)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
-anti_aliasing = false
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_panel"]
+texture = ExtResource("2_4bd47")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn"]
+texture = ExtResource("3_btn_tex")
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 8.0
+texture_margin_bottom = 8.0
+modulate_color = Color(0.9, 0.9, 0.9, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_pressed"]
+content_margin_top = 9.0
+content_margin_bottom = 7.0
+texture = ExtResource("3_btn_tex")
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 8.0
+texture_margin_bottom = 8.0
+modulate_color = Color(0.7, 0.7, 0.7, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_hover"]
+texture = ExtResource("3_btn_tex")
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 8.0
+texture_margin_bottom = 8.0
 
 [node name="GarageWindow" type="Window" unique_id=1069522743]
 transparent_bg = true
 oversampling_override = 1.0
 initial_position = 1
-size = Vector2i(360, 220)
+size = Vector2i(320, 192)
 borderless = true
 always_on_top = true
 transparent = true
 unfocusable = true
 script = ExtResource("1_1sqgk")
 
-[node name="PanelContainer" type="PanelContainer" parent="." unique_id=940509211]
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=822065653]
+texture_filter = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+theme_override_styles/panel = SubResource("StyleBoxTexture_panel")
 
-[node name="MarginContainer" type="MarginContainer" parent="PanelContainer" unique_id=966424993]
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer" unique_id=1235324940]
 layout_mode = 2
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 16
-theme_override_constants/margin_right = 16
-theme_override_constants/margin_bottom = 16
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 12
 
-[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer" unique_id=94290783]
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer" unique_id=36432608]
 layout_mode = 2
-theme_override_constants/separation = 12
 
-[node name="VBoxOptions" type="VBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer" unique_id=783217591]
+[node name="VBoxOptions" type="VBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer" unique_id=241474466]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="HBoxColor" type="HBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions" unique_id=1060358486]
+[node name="HBoxColor" type="HBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions" unique_id=663928025]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxColor" unique_id=177847550]
+[node name="Label" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxColor" unique_id=477363192]
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
 text = "Color:"
 
-[node name="PreviousColor" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxColor" unique_id=1387007921]
+[node name="PreviousColor" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxColor" unique_id=1651526078]
 custom_minimum_size = Vector2(28, 0)
 layout_mode = 2
 text = "<"
 
-[node name="CounterColor" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxColor" unique_id=1621186043]
+[node name="CounterColor" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxColor" unique_id=1383577313]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "1/6"
 horizontal_alignment = 1
 
-[node name="NextColor" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxColor" unique_id=851916763]
+[node name="NextColor" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxColor" unique_id=1287808571]
 custom_minimum_size = Vector2(28, 0)
 layout_mode = 2
 text = ">"
 
-[node name="HBoxCabin" type="HBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions" unique_id=949224299]
+[node name="HBoxCabin" type="HBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions" unique_id=1954883761]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxCabin" unique_id=1021037985]
+[node name="Label" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxCabin" unique_id=1689346578]
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
 text = "Cabin:"
 
-[node name="PreviousCabin" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxCabin" unique_id=1105000298]
+[node name="PreviousCabin" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxCabin" unique_id=754268874]
 custom_minimum_size = Vector2(28, 0)
 layout_mode = 2
 disabled = true
 text = "<"
 
-[node name="CounterCabin" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxCabin" unique_id=185006868]
+[node name="CounterCabin" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxCabin" unique_id=806861122]
 modulate = Color(0.6, 0.6, 0.6, 1)
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Default"
 horizontal_alignment = 1
 
-[node name="NextCabin" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxCabin" unique_id=1685796506]
+[node name="NextCabin" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxCabin" unique_id=1222780976]
 custom_minimum_size = Vector2(28, 0)
 layout_mode = 2
 disabled = true
 text = ">"
 
-[node name="HBoxWheels" type="HBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions" unique_id=5004455]
+[node name="HBoxWheels" type="HBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions" unique_id=554480762]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxWheels" unique_id=55411069]
+[node name="Label" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxWheels" unique_id=274594040]
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
 text = "Wheels:"
 
-[node name="PreviousWheels" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxWheels" unique_id=1717827252]
+[node name="PreviousWheels" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxWheels" unique_id=1531243176]
 custom_minimum_size = Vector2(28, 0)
 layout_mode = 2
 disabled = true
 text = "<"
 
-[node name="CounterWheels" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxWheels" unique_id=662735028]
+[node name="CounterWheels" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxWheels" unique_id=688161314]
 modulate = Color(0.6, 0.6, 0.6, 1)
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Default"
 horizontal_alignment = 1
 
-[node name="NextWheels" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxWheels" unique_id=217724694]
+[node name="NextWheels" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxWheels" unique_id=1699370616]
 custom_minimum_size = Vector2(28, 0)
 layout_mode = 2
 disabled = true
 text = ">"
 
-[node name="Spacer" type="Control" parent="PanelContainer/MarginContainer/VBoxContainer" unique_id=1687841848]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="Confirm" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer" unique_id=669974502]
+[node name="Confirm" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer" unique_id=901871844]
 custom_minimum_size = Vector2(100, 32)
 layout_mode = 2
 size_flags_horizontal = 4
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_hover")
 text = "OK"
 
 [connection signal="pressed" from="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxColor/PreviousColor" to="." method="previous_color"]
