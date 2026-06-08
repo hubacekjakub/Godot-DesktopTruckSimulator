@@ -36,6 +36,11 @@ window/size/transparent=true
 window/subwindows/embed_subwindows=false
 window/per_pixel_transparency/allowed=true
 
+[gui]
+
+theme/default_font_antialiasing=0
+theme/custom_font="uid://co3v05emj6rpw"
+
 [rendering]
 
 textures/canvas_textures/default_texture_filter=3
