@@ -36,12 +36,29 @@ jobs:
           relative_project_path: ./
           cache: true
           export_debug: false
-          archive_output: true
+          archive_output: false
           wine_path: /usr/bin/wine64
+
+      - name: Copy settings.cfg to Build Directories
+        run: |
+          for dir in $(find ${{ steps.export.outputs.build_directory }} -mindepth 1 -maxdepth 1 -type d); do
+            cp ./settings.cfg "$dir/"
+            echo "📄 Copied settings.cfg to $dir"
+          done
+
+      - name: Archive Builds
+        run: |
+          mkdir -p ./archives
+          for dir in $(find ${{ steps.export.outputs.build_directory }} -mindepth 1 -maxdepth 1 -type d); do
+            DIRNAME=$(basename "$dir")
+            (cd "$dir" && zip -r "../../archives/${DIRNAME}.zip" .)
+            echo "📦 Archived $DIRNAME"
+          done
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v7
         with:
           name: ${{ env.ITCH_GAME_NAME }}-Artifacts
-          path: ${{ steps.export.outputs.archive_directory }}/*
+          path: ./archives/*
           retention-days: 30
+
