@@ -6,7 +6,7 @@ var _active_truck_window: Window = null
 var _is_paused: bool = false
 var _direction: int = 1 # Start driving Left-to-Right
 
-var _first_pass_customization_delay: float = 4.0
+var _first_pass_customization_delay: float = 2.5
 
 func _ready() -> void:
 	# Create and configure wait timer
