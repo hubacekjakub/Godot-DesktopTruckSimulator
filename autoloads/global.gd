@@ -6,6 +6,8 @@ var _active_truck_window: Window = null
 var _is_paused: bool = false
 var _direction: int = 1 # Start driving Left-to-Right
 
+var _first_pass_customization_delay: float = 4.0
+
 func _ready() -> void:
 	# Create and configure wait timer
 	_wait_timer = Timer.new()
@@ -24,6 +26,13 @@ func _ready() -> void:
 	# Boot the first driving pass after setup is finished
 	get_tree().create_timer(1.0).timeout.connect(start_next_pass)
 
+	if ConfigManager.get_setting("TruckSettings", "customization", false):
+		get_tree().create_timer(_first_pass_customization_delay).timeout.connect(_on_first_pass_customization_timer_timeout)
+
+func _on_first_pass_customization_timer_timeout() -> void:
+	assert(not _is_paused, "Should never be paused when pausing movement!")
+	SignalBus.truck_movement_stop_triggered.emit()
+
 func start_next_pass() -> void:
 	if _is_paused:
 		return
@@ -34,6 +43,8 @@ func start_next_pass() -> void:
 
 	var min_speed: float = ConfigManager.get_setting("TruckSettings", "min_speed", 200.0)
 	var max_speed: float = ConfigManager.get_setting("TruckSettings", "max_speed", 600.0)
+	assert(min_speed >= 0.0, "TruckSettings: min_speed cannot be negative")
+	assert(min_speed <= max_speed, "TruckSettings: min_speed cannot be greater than max_speed")
 
 	# Randomize driving speed
 	var speed: float = randf_range(min_speed, max_speed)

@@ -7,6 +7,7 @@ class_name TruckWindow
 var _is_initialized: bool = false
 
 func _ready() -> void:
+	assert(_entity != null, "TruckEntity child node is missing from TruckWindow scene!")
 	borderless = true
 	unresizable = true
 	always_on_top = true

@@ -41,6 +41,7 @@ extends Window
 @onready var confirm_button: Button = $PanelContainer/MarginContainer/VBoxContainer/Confirm
 
 func _ready() -> void:
+	assert(cabin_colors.size() > 0, "garage_window: cabin_colors array must not be empty")
 	# Load current setup from customization manager
 	current_color_index = Customization.current_color_index
 	update_ui()
