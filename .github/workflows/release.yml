@@ -11,7 +11,7 @@ on:
         required: true
 
 env:
-  GODOT_EXPORT_VERSION: "4.6.1-stable"
+  GODOT_EXPORT_VERSION: "4.6.3-stable"
   ITCH_GAME_NAME: ${{ secrets.ITCH_GAME_NAME }}
 
 jobs:

@@ -8,8 +8,8 @@ on:
   workflow_dispatch:
 
 env:
-  GODOT_VERSION: "4.6.1"
-  GODOT_EXPORT_VERSION: "4.6.1-stable"
+  GODOT_VERSION: "4.6.3"
+  GODOT_EXPORT_VERSION: "4.6.3-stable"
   ITCH_GAME_NAME: ${{ secrets.ITCH_GAME_NAME }}
 
 jobs:
