@@ -48,10 +48,11 @@ jobs:
 
       - name: Archive Builds
         run: |
-          mkdir -p ./archives
+          ARCHIVE_DIR="${GITHUB_WORKSPACE}/archives"
+          mkdir -p "$ARCHIVE_DIR"
           for dir in $(find ${{ steps.export.outputs.build_directory }} -mindepth 1 -maxdepth 1 -type d); do
             DIRNAME=$(basename "$dir")
-            (cd "$dir" && zip -r "../../archives/${DIRNAME}.zip" .)
+            (cd "$dir" && zip -r "${ARCHIVE_DIR}/${DIRNAME}.zip" .)
             echo "📦 Archived $DIRNAME"
           done
 
