@@ -6,6 +6,8 @@ var _portal: Window = null
 var _truck_win_ref: Window = null
 
 func _ready() -> void:
+	if not OS.is_debug_build():
+		return
 	# Spawns panel at startup
 	_panel = load("res://scenes/debug/debug_panel.tscn").instantiate()
 	get_tree().root.add_child.call_deferred(_panel)

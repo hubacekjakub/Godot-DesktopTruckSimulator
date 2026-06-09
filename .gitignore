@@ -41,3 +41,7 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Superpowers brainstorming tool
+.superpowers/
+

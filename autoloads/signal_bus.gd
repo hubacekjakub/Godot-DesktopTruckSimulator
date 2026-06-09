@@ -5,7 +5,19 @@ extends Node
 signal truck_spawned(truck_window: Window)
 signal truck_pass_completed()
 
+# Truck movement events
+signal truck_movement_stop_triggered()
+signal truck_movement_stop_finished()
+
+signal truck_movement_resume_triggered()
+signal truck_movement_resume_finished()
+
+# Customization
+signal customization_color_changed(color: Color)
+signal customization_cabin_changed(cabin_id: int)
+signal customization_wheels_changed(wheel_id: int)
+signal customization_finished()
+
 # Debug actions
-signal movement_toggle_requested(is_moving: bool)
 signal debug_portal_toggle_requested(open: bool)
 signal truck_color_randomize_requested()

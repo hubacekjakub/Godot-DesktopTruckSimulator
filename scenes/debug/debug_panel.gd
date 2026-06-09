@@ -18,7 +18,10 @@ func _ready() -> void:
 func _on_btn_move_pressed() -> void:
 	_truck_moving = not _truck_moving
 	btn_move.text = "Start Truck" if not _truck_moving else "Stop Truck"
-	SignalBus.movement_toggle_requested.emit(_truck_moving)
+	if _truck_moving:
+		SignalBus.customization_finished.emit()
+	else:
+		SignalBus.truck_movement_stop_triggered.emit()
 
 func _on_btn_portal_pressed() -> void:
 	SignalBus.debug_portal_toggle_requested.emit(not _portal_open)

@@ -20,6 +20,7 @@ func get_usable_rect() -> Rect2i:
 
 ## Instantiates and configures a new OS window
 func spawn_window(scene_path: String) -> Window:
+	assert(not scene_path.is_empty(), "WindowManager: spawn_window was called with an empty scene path")
 	var scene := load(scene_path) as PackedScene
 	if not scene:
 		push_error("WindowManager: Cannot load window scene (or it is not a PackedScene): " + scene_path)

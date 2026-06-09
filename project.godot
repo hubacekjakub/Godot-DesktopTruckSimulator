@@ -10,12 +10,21 @@ config_version=5
 
 [application]
 
-config/name="Godot-DesktopTruckSimulator"
+config/name="DesktopTruckSimulator"
 config/description="A simple desktop truck animation."
 run/main_scene="res://levels/main.tscn"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 boot_splash/show_image=false
 config/icon="res://icon.svg"
+
+[autoload]
+
+SignalBus="*res://autoloads/signal_bus.gd"
+ConfigManager="*res://autoloads/config_manager.gd"
+WindowManager="*res://autoloads/window_manager.gd"
+Global="*res://autoloads/global.gd"
+DebugManager="*res://autoloads/debug_manager.gd"
+Customization="*res://autoloads/customization.gd"
 
 [display]
 
@@ -27,21 +36,16 @@ window/size/transparent=true
 window/subwindows/embed_subwindows=false
 window/per_pixel_transparency/allowed=true
 
+[gui]
+
+theme/default_font_antialiasing=0
+theme/custom_font="uid://co3v05emj6rpw"
+
 [rendering]
 
+textures/canvas_textures/default_texture_filter=3
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
-;environment/defaults/default_clear_color=Color(0, 0, 0, 0)
 viewport/transparent_background=true
-
-[autoload]
-
-SignalBus="*res://autoloads/signal_bus.gd"
-ConfigManager="*res://autoloads/config_manager.gd"
-WindowManager="*res://autoloads/window_manager.gd"
-Global="*res://autoloads/global.gd"
-DebugManager="*res://autoloads/debug_manager.gd"
-
-
-
-
+2d/snap/snap_2d_transforms_to_pixel=true
+2d/snap/snap_2d_vertices_to_pixel=true
