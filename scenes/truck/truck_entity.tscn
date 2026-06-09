@@ -12,10 +12,8 @@ shader_parameter/window_width = 1.0
 shader_parameter/screen_left = 0.0
 shader_parameter/screen_right = 1920.0
 shader_parameter/fade_margin = 200.0
-shader_parameter/safety_margin = 60.0
 shader_parameter/target_color = Color(0.92156863, 0.92941177, 0.9137255, 1)
 shader_parameter/paint_color = Color(0.92156863, 0.92941177, 0.9137255, 1)
-shader_parameter/enable_fade = false
 
 [sub_resource type="Gradient" id="Gradient_dust"]
 offsets = PackedFloat32Array(0, 0.722222, 1)
