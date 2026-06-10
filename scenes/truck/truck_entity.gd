@@ -38,7 +38,8 @@ func _ready() -> void:
 
 	_start_bobbing()
 
-func _process(delta: float) -> void:
+# Using _physics_process ensures consistent movement regardless of frame rate, preventing the pixel jitter caused by variable delta in _process.
+func _physics_process(delta: float) -> void:
 	if not _moving:
 		return
 
