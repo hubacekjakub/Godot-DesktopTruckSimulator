@@ -66,7 +66,10 @@ func _process(_delta: float) -> void:
 		usable_rect.position.x,
 		usable_rect.position.x + usable_rect.size.x - size.x)
 
-	position = Vector2i(clamped_x, _entity.get_target_y())
+	# Changing windows position every frame can cause performance issues due to DWM compositor roundtrips. Change only when necessary.
+	var new_pos := Vector2i(clamped_x, _entity.get_target_y())
+	if position != new_pos:
+		position = new_pos
 
 	# Using roundi() to avoid sub-pixel rendering issues and ensure the window snaps to integer pixel positions.
 	var offset_x: int = roundi(logical_x) - clamped_x
