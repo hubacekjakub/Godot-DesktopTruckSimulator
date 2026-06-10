@@ -10,12 +10,10 @@ class_name TruckEntity
 	$WheelDust3
 ]
 
-var _logical_x: float = 0.0
 var _target_y: int = 0
 var _speed: float = 0.0
 var _direction: int = 1
 var _moving: bool = false
-var _center_x: float = 192.0
 var _bob_tween: Tween
 
 # Speed multiplier for gradual starting/stopping
@@ -24,7 +22,9 @@ var _target_multiplier: float = 1.0
 var _multiplier_tween: Tween = null
 
 func _ready() -> void:
-	_center_x = position.x
+	# Process before TruckWindow so position.x is current when the portal reads it
+	process_priority = -1
+
 	_truck_wheels.material = _truck_body.material
 
 	SignalBus.truck_movement_stop_triggered.connect(_on_truck_movement_stop_triggered)
@@ -42,7 +42,7 @@ func _process(delta: float) -> void:
 	if not _moving:
 		return
 
-	_logical_x += _speed * _direction * _speed_multiplier * delta
+	position.x += _speed * _direction * _speed_multiplier * delta
 
 	# Update particle emitters and bobbing tween based on speed multiplier
 	for emitter in _wheel_emitters:
@@ -52,30 +52,16 @@ func _process(delta: float) -> void:
 	if _bob_tween and _bob_tween.is_valid():
 		_bob_tween.set_speed_scale(_speed_multiplier)
 
-	# Verify if driving has exited current monitor space
-	var rect: Rect2i = WindowManager.get_usable_rect()
-	var win_width: int = get_window().size.x
-
-	if _direction == 1 and _logical_x > rect.position.x + rect.size.x:
-		_moving = false
-		SignalBus.truck_pass_completed.emit()
-	elif _direction == -1 and _logical_x < rect.position.x - win_width:
-		_moving = false
-		SignalBus.truck_pass_completed.emit()
-
-func get_logical_x() -> float:
-	return _logical_x
+func is_moving() -> bool:
+	return _moving
 
 func get_target_y() -> int:
 	return _target_y
 
-func get_center_x() -> float:
-	return _center_x
-
 func get_truck_body_material() -> ShaderMaterial:
 	return _truck_body.material as ShaderMaterial
 
-func spawn_truck(dir: int, spd: float) -> void:
+func spawn_truck(dir: int, spd: float, spawn_x: float, target_y: int) -> void:
 	_direction = dir
 	_speed = spd
 	_moving = true
@@ -85,22 +71,19 @@ func spawn_truck(dir: int, spd: float) -> void:
 	if _multiplier_tween and _multiplier_tween.is_valid():
 		_multiplier_tween.kill()
 
-	var rect: Rect2i = WindowManager.get_usable_rect()
-	var win_size: Vector2i = get_window().size
-	var vert_offset: int = ConfigManager.get_setting("TruckSettings", "vertical_offset", -192)
-
-	_target_y = rect.position.y + rect.size.y - win_size.y - vert_offset
-
-	if _direction == 1:
-		_logical_x = float(rect.position.x - win_size.x)
-	else:
-		_logical_x = float(rect.position.x + rect.size.x)
+	_target_y = target_y
+	position.x = spawn_x
+	# Keep entity at vertical center of the window
+	position.y = get_parent().size.y / 2.0
 
 	scale.x = abs(scale.x) * _direction
 	visible = true
 	for emitter in _wheel_emitters:
 		if is_instance_valid(emitter):
 			emitter.emitting = true
+
+func stop_moving() -> void:
+	_moving = false
 
 func update_shader_parameters(window_x: float, window_width: float, screen_left: float, screen_right: float) -> void:
 	var mat := get_truck_body_material()

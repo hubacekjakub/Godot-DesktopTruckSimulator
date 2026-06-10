@@ -8,11 +8,14 @@ transparent_bg = true
 initial_position = 1
 size = Vector2i(384, 384)
 visible = false
-borderless = true
 always_on_top = true
 transparent = true
 unfocusable = true
 mouse_passthrough = true
 script = ExtResource("1_window")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1754482669]
+position = Vector2(192, 192)
+ignore_rotation = false
 
 [node name="TruckEntity" parent="." unique_id=1409384852 instance=ExtResource("2_entity")]
