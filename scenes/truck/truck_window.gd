@@ -61,15 +61,15 @@ func _process(_delta: float) -> void:
 	var usable_rect: Rect2i = WindowManager.get_usable_rect()
 	var logical_x: float = _entity.get_logical_x()
 
-	# Clamp window coordinate so it never flows outside the monitor space
-	var clamped_x: int = clampi(int(logical_x),
+	# Using roundi() to avoid sub-pixel rendering issues and ensure the window snaps to integer pixel positions.
+	var clamped_x: int = clampi(roundi(logical_x),
 		usable_rect.position.x,
 		usable_rect.position.x + usable_rect.size.x - size.x)
 
 	position = Vector2i(clamped_x, _entity.get_target_y())
 
-	# Offset visual entity inside window bounds
-	var offset_x: int = int(logical_x) - clamped_x
+	# Using roundi() to avoid sub-pixel rendering issues and ensure the window snaps to integer pixel positions.
+	var offset_x: int = roundi(logical_x) - clamped_x
 	_entity.position.x = _entity.get_center_x() + offset_x
 
 	# Update edge-fade shader parameters
