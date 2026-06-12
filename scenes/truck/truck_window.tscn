@@ -5,7 +5,7 @@
 
 [node name="TruckWindow" type="Window" unique_id=1095621074]
 transparent_bg = true
-initial_position = 1
+initial_position = 0
 size = Vector2i(384, 384)
 visible = false
 borderless = true

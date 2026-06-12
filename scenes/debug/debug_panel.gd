@@ -13,6 +13,10 @@ func _ready() -> void:
 	size = Vector2i(280, 240)
 	close_requested.connect(func(): queue_free())
 	SignalBus.debug_portal_toggle_requested.connect(_on_portal_toggle_received)
+
+	# Spawned hidden + off-screen by WindowManager; place and show ourselves.
+	var rect := WindowManager.get_usable_rect()
+	position = Vector2i(rect.position.x + 100, rect.position.y + 300)
 	show()
 
 func _on_btn_move_pressed() -> void:

@@ -46,6 +46,17 @@ func _ready() -> void:
 	current_color_index = Customization.current_color_index
 	update_ui()
 
+	# Spawned hidden + off-screen by WindowManager; place above the truck
+	# (or centered in the usable area as a fallback) and show ourselves.
+	var truck_rect := Global.get_truck_rect()
+	if truck_rect.size != Vector2i.ZERO:
+		position_above_rect(truck_rect, 10)
+	else:
+		var r := WindowManager.get_usable_rect()
+		position = Vector2i(r.position.x + (r.size.x - size.x) / 2,
+			r.position.y + (r.size.y - size.y) / 2)
+	show()
+
 func next_color() -> void:
 	if current_color_index == cabin_colors.size() - 1:
 		current_color_index = 0

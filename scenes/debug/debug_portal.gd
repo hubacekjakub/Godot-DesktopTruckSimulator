@@ -16,6 +16,10 @@ func _ready() -> void:
 	
 	# Enable layers 1 (truck) and 2 (debug shapes)
 	canvas_cull_mask = 1 | 2
+
+	# Spawned hidden + off-screen by WindowManager; place and show ourselves.
+	var rect := WindowManager.get_usable_rect()
+	position = Vector2i(rect.position.x + 400, rect.position.y + 300)
 	show()
 
 func connect_world(source_window: Window) -> void:

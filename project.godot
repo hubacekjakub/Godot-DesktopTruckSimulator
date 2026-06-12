@@ -33,6 +33,8 @@ window/size/viewport_height=384
 window/size/borderless=true
 window/size/always_on_top=true
 window/size/transparent=true
+window/size/initial_position_type=0
+window/size/initial_position=Vector2i(-10000, -10000)
 window/subwindows/embed_subwindows=false
 window/per_pixel_transparency/allowed=true
 

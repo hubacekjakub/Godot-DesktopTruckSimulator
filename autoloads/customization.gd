@@ -19,11 +19,8 @@ func _on_truck_movement_stop_finished() -> void:
 	if _garage_window_resource.is_empty():
 		return
 
+	# The garage positions itself above the truck and shows itself in its _ready.
 	_garage_window_instance = WindowManager.spawn_window(_garage_window_resource)
-	if is_instance_valid(_garage_window_instance):
-		var truck_rect := Global.get_truck_rect()
-		if truck_rect.size != Vector2i.ZERO and _garage_window_instance.has_method("position_above_rect"):
-			_garage_window_instance.position_above_rect(truck_rect, 10)
 
 func _on_truck_movement_resume_triggered() -> void:
 	if is_instance_valid(_garage_window_instance):

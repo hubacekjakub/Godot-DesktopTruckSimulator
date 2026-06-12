@@ -17,7 +17,7 @@ func _ready() -> void:
 	canvas_cull_mask = 1 # Visual elements only
 
 	# Window starts off-screen to avoid transparency flash
-	position = Vector2i(-10000, -10000)
+	position = WindowManager.OFFSCREEN
 	transparent = false
 	transparent_bg = false
 	show()
@@ -43,7 +43,7 @@ func _ready() -> void:
 
 func initialize_truck(dir: int, spd: float) -> void:
 	# Reposition off-screen first to avoid visual jump/flash
-	position = Vector2i(-10000, -10000)
+	position = WindowManager.OFFSCREEN
 	visible = true
 	if is_instance_valid(_entity) and _entity.has_method("spawn_truck"):
 		_entity.spawn_truck(dir, spd)
