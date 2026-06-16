@@ -134,16 +134,15 @@ func get_logical_x() -> float:
 func get_speed_multiplier() -> float:
 	return _speed_multiplier
 
-func get_direction() -> int:
-	return _direction
-
 func get_truck_rect() -> Rect2i:
 	var x: int = roundi(_logical_x)
 	for i in _truck_windows.size():
 		var rect: Rect2i = _monitor_rects[i]
-		if x >= rect.position.x and x < rect.position.x + rect.size.x and _truck_windows[i].visible:
-			return Rect2i(_truck_windows[i].position, _truck_windows[i].size)
+		var win: Window = _truck_windows[i]
+		var truck_visible: bool = win.has_method("is_truck_visible") and win.call("is_truck_visible")
+		if x >= rect.position.x and x < rect.position.x + rect.size.x and truck_visible:
+			return Rect2i(win.position, win.size)
 	for win in _truck_windows:
-		if win.visible:
+		if win.has_method("is_truck_visible") and win.call("is_truck_visible"):
 			return Rect2i(win.position, win.size)
 	return Rect2i()
