@@ -9,7 +9,6 @@ signal border_reached
 
 const PARK_TWEEN_TIME: float = 0.1
 
-var _is_initialized: bool = false
 var _monitor_rect: Rect2i
 var _pass_direction: int = 1
 var _border_emitted: bool = false
@@ -21,7 +20,7 @@ var _border_emitted: bool = false
 # jump) does not produce the opaque flash on Windows.
 var _park_offset_y: float = 0.0
 var _park_tween: Tween = null
-var _shown_once: bool = false
+var _revealed: bool = false
 
 func _ready() -> void:
 	assert(_entity != null, "TruckEntity child node is missing from TruckWindow scene!")
@@ -51,9 +50,6 @@ func _ready() -> void:
 	# Emit signal to let DebugManager link the world_2d and track viewport
 	SignalBus.truck_spawned.emit(self)
 
-	# Mark as fully initialized
-	_is_initialized = true
-
 	# Immediately hide the window at boot until the first pass drives it
 	hide_window()
 
@@ -67,43 +63,54 @@ func is_truck_visible() -> bool:
 func initialize_truck(dir: int) -> void:
 	_pass_direction = dir
 	_border_emitted = false
-	# Pre-position the entity off-screen before revealing, so the first _process
-	# frame already sees it at the correct off-screen offset.
+
+	# Pre-position the entity off-screen before revealing (so the first _process
+	# frame already sees the correct off-screen offset) and reset its visual state.
 	if is_instance_valid(_entity):
 		var off: int = -size.x if dir == 1 else size.x
 		_entity.position.x = _entity.get_center_x() + off
-
-	# First reveal of this window's lifetime. _process has not run yet (it is
-	# gated on _shown_once), so the window is still at OFFSCREEN from _ready —
-	# the single visible=true here renders its one opaque frame off-screen and
-	# is invisible. Start fully parked below; the next _process places it
-	# below-monitor and the tween slides it up.
-	if not _shown_once:
-		_park_offset_y = float(_monitor_rect.size.y)
-		_shown_once = true
-		visible = true
-
-	if is_instance_valid(_entity) and _entity.has_method("reset_visual"):
 		_entity.reset_visual(dir)
 
-	# Slide up into view (small per-frame steps, no flash).
-	_tween_park_offset(0.0)
+	# First reveal of this window's lifetime. _process has not run yet (it is
+	# gated on _revealed), so the window is still at OFFSCREEN from _ready —
+	# the single visible=true here renders its one opaque frame off-screen and
+	# is invisible. This is the ONLY visibility toggle in the window's life: a
+	# false->true toggle flashes an opaque frame at an OS-chosen position
+	# regardless of where we set `position`, so after this we never hide it again
+	# and rely purely on the park-offset slide.
+	if not _revealed:
+		_park_offset_y = float(_monitor_rect.size.y)
+		_revealed = true
+		visible = true
+
+	_slide_up()
 
 func hide_window() -> void:
-	# Slide the window straight down, fully below its monitor, while keeping it
-	# visible + transparent. This removes it from the clickable area (no idle
-	# click-block) without a visibility toggle or a huge OFFSCREEN jump — both of
-	# which produce an opaque flash on Windows.
+	# Hide the truck and slide the window straight down, fully below its monitor.
+	# The slide is a tween (small per-frame steps) so it never produces the opaque
+	# flash that a visibility toggle or a big OFFSCREEN jump would.
 	if is_instance_valid(_entity):
 		_entity.visible = false
 	if _monitor_rect.size.y > 0:
-		_tween_park_offset(float(_monitor_rect.size.y))
+		_slide_down()
 	else:
 		# Boot: monitor rect not set yet. Window is already at OFFSCREEN from
 		# _ready, so just keep it hidden until the first initialize_truck.
 		visible = false
 
-func _tween_park_offset(target: float) -> void:
+## Reveal: tween the park offset back to 0 so the window slides up into view.
+## The window stays visible throughout (see initialize_truck — we never toggle
+## visibility after the first reveal, because that flashes).
+func _slide_up() -> void:
+	_start_park_tween(0.0)
+
+## Hide: tween the park offset down until the window is fully below the monitor.
+## The window stays visible+transparent (parked below, out of the clickable area)
+## — toggling visibility to release it from the compositor reintroduces the flash.
+func _slide_down() -> void:
+	_start_park_tween(float(_monitor_rect.size.y))
+
+func _start_park_tween(target: float) -> void:
 	if _park_tween and _park_tween.is_valid():
 		_park_tween.kill()
 	_park_tween = create_tween()
@@ -111,10 +118,11 @@ func _tween_park_offset(target: float) -> void:
 		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 
 func _process(_delta: float) -> void:
-	# Gated on _shown_once so the window stays untouched at OFFSCREEN until the
-	# first pass reveals it. After that it runs even while the entity is hidden
-	# (idle), to keep driving the park-offset tween (slide down/up).
-	if not _is_initialized or not _shown_once or not is_instance_valid(_entity):
+	# Gated on _revealed so the window stays untouched at OFFSCREEN until the
+	# first pass reveals it (which also implies _ready's transparency setup is
+	# done). After that it runs even while the entity is hidden (idle), to keep
+	# driving the park-offset tween (slide down/up).
+	if not _revealed or not is_instance_valid(_entity):
 		return
 
 	var logical_x: float = Player.get_logical_x()
@@ -144,21 +152,16 @@ func _process(_delta: float) -> void:
 		return
 
 	var multiplier: float = Player.get_speed_multiplier()
-
-	if _entity.has_method("set_particles_active"):
-		_entity.set_particles_active(multiplier > 0.1)
-
-	if _entity.has_method("set_bob_speed"):
-		_entity.set_bob_speed(multiplier)
+	_entity.set_particles_active(multiplier > 0.1)
+	_entity.set_bob_speed(multiplier)
 
 	# Feed the edge-fade shader global screen coordinates for THIS monitor.
-	if _entity.has_method("update_shader_parameters"):
-		_entity.update_shader_parameters(
-			float(clamped_x),
-			float(size.x),
-			float(_monitor_rect.position.x),
-			float(_monitor_rect.position.x + _monitor_rect.size.x)
-		)
+	_entity.update_shader_parameters(
+		float(clamped_x),
+		float(size.x),
+		float(_monitor_rect.position.x),
+		float(_monitor_rect.position.x + _monitor_rect.size.x)
+	)
 
 	# Emit once when the truck has fully exited this monitor in its travel direction.
 	if not _border_emitted:
