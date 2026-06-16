@@ -10,13 +10,13 @@ func _ready() -> void:
 	# If running inside editor, fall back to project directory
 	if OS.has_feature("editor"):
 		exe_dir = "res://"
-	
+
 	var dest_path = exe_dir.path_join(CONFIG_NAME)
-	
+
 	# Verify if config file is present in the target directory
 	if not FileAccess.file_exists(dest_path):
 		_copy_default_config(dest_path)
-		
+
 	var err = _config.load(dest_path)
 	if err == OK:
 		_load_settings()
@@ -48,3 +48,6 @@ func _load_settings() -> void:
 		_settings[section] = {}
 		for key in _config.get_section_keys(section):
 			_settings[section][key] = _config.get_value(section, key)
+
+func is_multimonitor() -> bool:
+	return get_setting("TruckSettings", "multimonitor", false)

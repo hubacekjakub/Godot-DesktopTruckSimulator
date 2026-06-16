@@ -1,8 +1,7 @@
 extends Node
 ## Singleton managing OS Windows, bounds mapping, and transparency.
 
-## Far off-screen origin where windows are created invisibly, before each window
-## moves itself to its real position and shows itself.
+## Far off-screen origin where windows are created invisibly
 const OFFSCREEN := Vector2i(-10000, -10000)
 
 var _target_screen_idx: int = 0
@@ -15,6 +14,7 @@ func _ready() -> void:
 	_target_screen_idx = DisplayServer.get_primary_screen()
 	update_desktop_bounds()
 
+# Find usable screen rect for primary screen
 func update_desktop_bounds() -> void:
 	var screen_count = DisplayServer.get_screen_count()
 	if _target_screen_idx >= screen_count:
@@ -24,17 +24,14 @@ func update_desktop_bounds() -> void:
 func get_usable_rect() -> Rect2i:
 	return _usable_rect
 
-## Instantiates a window born invisible and off-screen, so the OS never draws it
-## at a default location (the startup "flash"). The window is responsible for
-## positioning and showing ITSELF (typically at the end of its own _ready), since
-## only the window knows where it belongs and when it is ready to appear.
 func spawn_window(scene_path: String) -> Window:
+	# Instantiates a window born invisible and off-screen, so the OS never draws it
 	assert(not scene_path.is_empty(), "WindowManager: spawn_window was called with an empty scene path")
 	var scene := load(scene_path) as PackedScene
 	if not scene:
 		push_error("WindowManager: Cannot load window scene (or it is not a PackedScene): " + scene_path)
 		return null
-	
+
 	var win_node = scene.instantiate() as Window
 	if not win_node:
 		push_error("WindowManager: Instantiated node is not a Window subclass.")
@@ -49,3 +46,17 @@ func spawn_window(scene_path: String) -> Window:
 
 	get_tree().root.add_child.call_deferred(win_node)
 	return win_node
+
+## Returns the screen rects the truck should drive across. With multimonitor off,
+## that's just the primary screen (today's behavior). With it on, every screen's
+## usable rect, ordered left-to-right by virtual-desktop X. Used by Player to lay
+## out one truck window per returned rect.
+func get_ordered_screen_rects(multimonitor: bool) -> Array[Rect2i]:
+	if not multimonitor:
+		return [_usable_rect]
+
+	var rects: Array[Rect2i] = []
+	for i in DisplayServer.get_screen_count():
+		rects.append(DisplayServer.screen_get_usable_rect(i))
+	rects.sort_custom(func(a, b): return a.position.x < b.position.x)
+	return rects
