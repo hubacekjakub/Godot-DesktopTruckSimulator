@@ -11,9 +11,8 @@ var _moving: bool = false
 var _speed_multiplier: float = 1.0
 var _is_paused: bool = false
 
-var _truck_windows: Array[Window] = []
-var _monitor_rects: Array[Rect2i] = []
-var _borders_crossed: int = 0
+var _window_monitors: Dictionary = {} # Window -> Rect2i
+var _crossed_windows: Array[Window] = []
 
 var _wait_timer: Timer
 var _multiplier_tween: Tween = null
@@ -44,9 +43,15 @@ func _setup_windows() -> void:
 		if win.has_method("set_monitor_rect"):
 			win.set_monitor_rect(rect)
 		if win.has_signal("border_reached"):
-			win.connect("border_reached", _on_border_reached)
-		_truck_windows.append(win)
-		_monitor_rects.append(rect)
+			win.connect("border_reached", _on_border_reached.bind(win))
+		win.tree_exited.connect(_on_window_freed.bind(win))
+		_window_monitors[win] = rect
+
+func _on_window_freed(win: Window) -> void:
+	_window_monitors.erase(win)
+	_crossed_windows.erase(win)
+	if _moving:
+		_check_pass_completion()
 
 func _physics_process(delta: float) -> void:
 	if _moving:
@@ -55,7 +60,7 @@ func _physics_process(delta: float) -> void:
 func start_next_pass() -> void:
 	if _is_paused:
 		return
-	if _truck_windows.is_empty():
+	if _window_monitors.is_empty():
 		return
 
 	var min_speed: float = ConfigManager.get_setting("TruckSettings", "min_speed", 200.0)
@@ -64,33 +69,61 @@ func start_next_pass() -> void:
 	assert(min_speed <= max_speed, "TruckSettings: min_speed cannot be greater than max_speed")
 
 	_speed = randf_range(min_speed, max_speed)
-	_borders_crossed = 0
+	_crossed_windows.clear()
 	_speed_multiplier = 1.0
 	if _multiplier_tween and _multiplier_tween.is_valid():
 		_multiplier_tween.kill()
 
 	# Start just off the leading screen edge so no window pre-emits border_reached.
-	var window_width: int = _truck_windows[0].size.x
+	var window_width: int = 0
+	for win in _window_monitors:
+		if is_instance_valid(win):
+			window_width = win.size.x
+			break
+
+	var rects := _window_monitors.values()
+	if rects.is_empty():
+		return
+
 	if _direction == 1:
-		_logical_x = float(_monitor_rects[0].position.x - window_width)
+		var first: Rect2i = rects[0]
+		_logical_x = float(first.position.x - window_width)
 	else:
-		var last: Rect2i = _monitor_rects[-1]
+		var last: Rect2i = rects[-1]
 		_logical_x = float(last.position.x + last.size.x)
 
-	for win in _truck_windows:
+	for win in _window_monitors:
+		if not is_instance_valid(win):
+			continue
 		if win.has_method("initialize_truck"):
 			win.initialize_truck(_direction)
 
 	_moving = true
 
-func _on_border_reached() -> void:
-	_borders_crossed += 1
-	if _borders_crossed < _truck_windows.size():
+func _on_border_reached(win: Window) -> void:
+	if is_instance_valid(win) and not _crossed_windows.has(win):
+		_crossed_windows.append(win)
+	_check_pass_completion()
+
+func _check_pass_completion() -> void:
+	var valid_count := 0
+	for win in _window_monitors:
+		if is_instance_valid(win):
+			valid_count += 1
+
+	var crossed_count := 0
+	for win in _crossed_windows:
+		if is_instance_valid(win):
+			crossed_count += 1
+
+	if crossed_count < valid_count:
 		return
 
 	_moving = false
 	_direction = -_direction
-	for win in _truck_windows:
+	for win in _window_monitors:
+		if not is_instance_valid(win):
+			continue
 		if win.has_method("hide_window"):
 			win.hide_window()
 
@@ -136,13 +169,16 @@ func get_speed_multiplier() -> float:
 
 func get_truck_rect() -> Rect2i:
 	var x: int = roundi(_logical_x)
-	for i in _truck_windows.size():
-		var rect: Rect2i = _monitor_rects[i]
-		var win: Window = _truck_windows[i]
+	for win in _window_monitors:
+		if not is_instance_valid(win):
+			continue
+		var rect: Rect2i = _window_monitors[win]
 		var truck_visible: bool = win.has_method("is_truck_visible") and win.call("is_truck_visible")
 		if x >= rect.position.x and x < rect.position.x + rect.size.x and truck_visible:
 			return Rect2i(win.position, win.size)
-	for win in _truck_windows:
+	for win in _window_monitors:
+		if not is_instance_valid(win):
+			continue
 		if win.has_method("is_truck_visible") and win.call("is_truck_visible"):
 			return Rect2i(win.position, win.size)
 	return Rect2i()
