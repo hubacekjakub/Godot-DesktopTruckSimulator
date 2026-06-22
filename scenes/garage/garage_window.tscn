@@ -115,23 +115,20 @@ text = "Cabin:"
 [node name="PreviousCabin" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxCabin" unique_id=754268874]
 custom_minimum_size = Vector2(28, 0)
 layout_mode = 2
-disabled = true
 icon = ExtResource("3_ysxv4")
 icon_alignment = 1
 
 [node name="CounterCabin" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxCabin" unique_id=806861122]
-modulate = Color(0.6, 0.6, 0.6, 1)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/outline_size = 8
 theme_override_font_sizes/font_size = 24
-text = "Default"
+text = "1/1"
 horizontal_alignment = 1
 
 [node name="NextCabin" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxCabin" unique_id=1222780976]
 custom_minimum_size = Vector2(28, 0)
 layout_mode = 2
-disabled = true
 icon = ExtResource("4_pnia3")
 icon_alignment = 1
 
@@ -187,4 +184,6 @@ text = "OK"
 
 [connection signal="pressed" from="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxColor/PreviousColor" to="." method="previous_color"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxColor/NextColor" to="." method="next_color"]
+[connection signal="pressed" from="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxCabin/PreviousCabin" to="." method="previous_cabin"]
+[connection signal="pressed" from="PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxCabin/NextCabin" to="." method="next_cabin"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/VBoxContainer/Confirm" to="." method="confirm"]
