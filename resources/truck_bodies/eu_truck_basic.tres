@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="TruckBodyResource" format=3 uid="uid://dgoeoxmarc6ms"]
 
 [ext_resource type="Script" uid="uid://bae28xneiiles" path="res://resources/truck_body_resource.gd" id="1_ok81l"]
-[ext_resource type="Texture2D" uid="uid://wm74fdmwt0bb" path="res://assets/textures/truck_body.png" id="1_rr2kt"]
+[ext_resource type="Texture2D" uid="uid://wm74fdmwt0bb" path="res://assets/textures/truck_body_eu.png" id="1_rr2kt"]
 [ext_resource type="Texture2D" uid="uid://coe2c0q3ubslv" path="res://assets/textures/truck_wheel.png" id="3_nx3us"]
 
 [resource]

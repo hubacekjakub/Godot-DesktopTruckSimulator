@@ -9,6 +9,7 @@ var _garage_window_instance: Window = null
 # must not reference the class_name statically (class-registry rule).
 var _bodies: Array[Resource] = [
 	preload("res://resources/truck_bodies/eu_truck_basic.tres"),
+	preload("res://resources/truck_bodies/us_truck_basic.tres"),
 ]
 
 # Paint colors (moved out of garage_window.gd so the garage reads them from here).

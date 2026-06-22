@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://ds65xgo1qceny"]
 
 [ext_resource type="Script" uid="uid://bm6df77cjmitc" path="res://scenes/truck/truck_entity.gd" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://wm74fdmwt0bb" path="res://assets/textures/truck_body.png" id="2_body"]
+[ext_resource type="Texture2D" uid="uid://wm74fdmwt0bb" path="res://assets/textures/truck_body_eu.png" id="3_36y7d"]
 [ext_resource type="Texture2D" uid="uid://coe2c0q3ubslv" path="res://assets/textures/truck_wheel.png" id="4_36y7d"]
 [ext_resource type="Shader" uid="uid://drxjnprj04ob8" path="res://shaders/truck_fade.gdshader" id="4_shader"]
 
@@ -40,7 +40,7 @@ script = ExtResource("1_script")
 [node name="TruckBody" type="Sprite2D" parent="." unique_id=2053068222]
 texture_filter = 1
 material = SubResource("ShaderMaterial_fade")
-texture = ExtResource("2_body")
+texture = ExtResource("3_36y7d")
 
 [node name="Wheels" type="Node2D" parent="." unique_id=931530730]
 

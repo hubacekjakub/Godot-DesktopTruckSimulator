@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="TruckBodyResource" format=3 uid="uid://ddhwxqim3xreq"]
+
+[ext_resource type="Texture2D" uid="uid://d2bhwjndpnq0i" path="res://assets/textures/truck_body_us.png" id="1_ot1nu"]
+[ext_resource type="Script" uid="uid://bae28xneiiles" path="res://resources/truck_body_resource.gd" id="2_wsmt6"]
+[ext_resource type="Texture2D" uid="uid://coe2c0q3ubslv" path="res://assets/textures/truck_wheel.png" id="3_70tqq"]
+
+[resource]
+script = ExtResource("2_wsmt6")
+body_sprite = ExtResource("1_ot1nu")
+wheel_sprite = ExtResource("3_70tqq")
+wheel_positions = Array[Vector2]([Vector2(87, -8), Vector2(9, -7), Vector2(-17, -7)])
+metadata/_custom_type_script = "uid://bae28xneiiles"
