@@ -17,6 +17,5 @@ func _on_first_pass_customization_timer_timeout() -> void:
 func _on_customization_finished() -> void:
 	SignalBus.truck_movement_resume_triggered.emit()
 
-## Kept as a delegate so garage_window.gd can keep calling Global.get_truck_rect().
 func get_truck_rect() -> Rect2i:
 	return Player.get_truck_rect()

@@ -8,9 +8,8 @@ var _target_screen_idx: int = 0
 var _usable_rect: Rect2i
 
 func _ready() -> void:
-	# Pin to the primary screen. The launcher window now boots off-screen
-	# (project.godot initial_position), so its current_screen is unreliable
-	# for picking the monitor the truck should drive on.
+	# Pin to the primary screen — the launcher window boots off-screen
+	# (project.godot initial_position), so its current_screen is unreliable.
 	_target_screen_idx = DisplayServer.get_primary_screen()
 	update_desktop_bounds()
 

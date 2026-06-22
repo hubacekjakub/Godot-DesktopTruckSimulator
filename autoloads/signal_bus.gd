@@ -16,6 +16,7 @@ signal truck_movement_resume_finished()
 signal customization_color_changed(color: Color)
 signal customization_cabin_changed(body: Resource)
 signal customization_wheels_changed(wheel_id: int)
+signal customization_confirmed(color_index: int, cabin_index: int)
 signal customization_finished()
 
 # Debug actions
