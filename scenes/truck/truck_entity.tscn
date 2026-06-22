@@ -40,18 +40,18 @@ script = ExtResource("1_script")
 [node name="TruckBody" type="Sprite2D" parent="." unique_id=2053068222]
 texture_filter = 1
 material = SubResource("ShaderMaterial_fade")
-scale = Vector2(1.5, 1.5)
+scale = Vector2(1, 1)
 texture = ExtResource("2_body")
 
 [node name="TruckWheels" type="Sprite2D" parent="." unique_id=1053342362]
 texture_filter = 1
 material = SubResource("ShaderMaterial_fade")
-scale = Vector2(1.5, 1.5)
+scale = Vector2(1, 1)
 texture = ExtResource("3_wheels")
 
 [node name="WheelDust" type="GPUParticles2D" parent="." unique_id=522415731]
 position = Vector2(-87, 5)
-scale = Vector2(1.5, 1.5)
+scale = Vector2(1, 1)
 amount = 24
 lifetime = 0.6
 randomness = 0.3
@@ -59,7 +59,7 @@ process_material = SubResource("ParticleProcessMaterial_dust")
 
 [node name="WheelDust2" type="GPUParticles2D" parent="." unique_id=1008172147]
 position = Vector2(-48, 6)
-scale = Vector2(1.5, 1.5)
+scale = Vector2(1, 1)
 amount = 24
 lifetime = 0.6
 randomness = 0.3
@@ -67,7 +67,7 @@ process_material = SubResource("ParticleProcessMaterial_dust")
 
 [node name="WheelDust3" type="GPUParticles2D" parent="." unique_id=767972643]
 position = Vector2(70, 5)
-scale = Vector2(1.5, 1.5)
+scale = Vector2(1, 1)
 amount = 24
 lifetime = 0.6
 randomness = 0.3
