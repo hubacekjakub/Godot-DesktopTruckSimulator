@@ -7,7 +7,7 @@ signal border_reached
 
 @onready var _entity: TruckEntity = $TruckEntity
 
-const PARK_TWEEN_TIME: float = 0.1
+const PARK_TWEEN_TIME: float = 0.2
 
 var _monitor_rect: Rect2i
 var _pass_direction: int = 1
@@ -115,7 +115,7 @@ func _start_park_tween(target: float) -> void:
 		_park_tween.kill()
 	_park_tween = create_tween()
 	_park_tween.tween_property(self, "_park_offset_y", target, PARK_TWEEN_TIME) \
-		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		.set_trans(Tween.TRANS_LINEAR)
 
 func _process(_delta: float) -> void:
 	# Gated on _revealed so the window stays untouched at OFFSCREEN until the
