@@ -52,7 +52,7 @@ texture = ExtResource("4_36y7d")
 
 [node name="WheelDust" type="GPUParticles2D" parent="Wheels/Wheel1" unique_id=522415731]
 position = Vector2(3, 10)
-amount = 24
+amount = 12
 lifetime = 0.6
 randomness = 0.3
 process_material = SubResource("ParticleProcessMaterial_dust")
@@ -65,7 +65,7 @@ texture = ExtResource("4_36y7d")
 
 [node name="WheelDust2" type="GPUParticles2D" parent="Wheels/Wheel2" unique_id=1008172147]
 position = Vector2(3, 10)
-amount = 24
+amount = 12
 lifetime = 0.6
 randomness = 0.3
 process_material = SubResource("ParticleProcessMaterial_dust")
@@ -78,7 +78,7 @@ texture = ExtResource("4_36y7d")
 
 [node name="WheelDust3" type="GPUParticles2D" parent="Wheels/Wheel3" unique_id=767972643]
 position = Vector2(3, 10)
-amount = 24
+amount = 12
 lifetime = 0.6
 randomness = 0.3
 process_material = SubResource("ParticleProcessMaterial_dust")

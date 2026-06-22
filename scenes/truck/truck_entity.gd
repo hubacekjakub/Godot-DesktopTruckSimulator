@@ -36,6 +36,15 @@ func _ready() -> void:
 	SignalBus.customization_cabin_changed.connect(_on_customization_cabin_changed)
 	SignalBus.customization_wheels_changed.connect(_on_customization_wheels_changed)
 
+	# Initialize visuals from current customization settings
+	var colors := Customization.get_colors()
+	if Customization.current_color_index >= 0 and Customization.current_color_index < colors.size():
+		_on_customization_color_changed(colors[Customization.current_color_index])
+
+	var bodies := Customization.get_bodies()
+	if Customization.current_cabin_index >= 0 and Customization.current_cabin_index < bodies.size():
+		_on_customization_cabin_changed(bodies[Customization.current_cabin_index])
+
 	_start_bobbing()
 
 ## Resets visual state at the start of a pass. Movement fields live in Player.

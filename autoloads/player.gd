@@ -48,6 +48,8 @@ func _setup_windows() -> void:
 		_window_monitors[win] = rect
 
 func _on_window_freed(win: Window) -> void:
+	if not is_inside_tree():
+		return
 	_window_monitors.erase(win)
 	_crossed_windows.erase(win)
 	if _moving:
