@@ -29,7 +29,7 @@ jobs:
           path: ./builds
 
       - name: Create Release
-        uses: ncipollo/release-action@v1.20.0
+        uses: ncipollo/release-action@v1.21.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           generateReleaseNotes: true
@@ -57,7 +57,7 @@ jobs:
           path: ./builds
 
       - name: Setup Butler
-        uses: jdno/setup-butler@v1.6.0
+        uses: remarkablegames/setup-butler@v3.0.0
 
       - name: Deploy All Builds to itch.io
         env:
