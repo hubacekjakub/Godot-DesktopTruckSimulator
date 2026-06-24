@@ -20,7 +20,7 @@ func _ready() -> void:
 
 	var truck_rect := Global.get_truck_rect()
 	if truck_rect.size != Vector2i.ZERO:
-		position_above_rect(truck_rect, 10)
+		position_above_rect(truck_rect, -100)
 	else:
 		var r := WindowManager.get_usable_rect()
 		position = Vector2i(r.position.x + (r.size.x - size.x) / 2,
@@ -57,5 +57,6 @@ func confirm() -> void:
 func position_above_rect(target_rect: Rect2i, vertical_margin: int = 10) -> void:
 	initial_position = Window.WINDOW_INITIAL_POSITION_ABSOLUTE
 	var target_x := target_rect.position.x + (target_rect.size.x - size.x) / 2
-	var target_y := target_rect.position.y - size.y - vertical_margin
+	var full_offset := size.y + vertical_margin
+	var target_y := target_rect.position.y - full_offset
 	position = Vector2i(target_x, target_y)

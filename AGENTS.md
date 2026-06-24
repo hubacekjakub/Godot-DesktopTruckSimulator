@@ -124,13 +124,12 @@ Enabled by `multimonitor = true` in `settings.cfg` (`ConfigManager.is_multimonit
 Each `TruckWindow` detects the OS display scale of its assigned monitor and resizes itself proportionally so the truck appears at the same physical size on all monitors (including high-DPI screens).
 
 **How it works:**
-- `WindowManager.get_ordered_screen_data()` preserves the DisplayServer screen index alongside each rect. Player passes this index to `set_monitor_rect(rect, screen_index)`, which stores both as `_monitor_rect` and `_screen_index` — no secondary DisplayServer loop in the window.
-- After the two-frame transparency wait in `_ready()`, `_detect_monitor_scale()` reads `DisplayServer.screen_get_scale(_screen_index)` and multiplies by `truck_scale_multiplier` from config (default 1.0, manual override knob for monitors that report unexpected values).
-- If `_scale_factor != 1.0`, `_apply_display_scale()` resizes the window and calls `_entity.apply_display_scale(s)` on the entity (scales sprites and re-centers).
+- `WindowManager.get_ordered_screen_data()` preserves the DisplayServer screen index alongside each rect. Player passes this index to `set_monitor_rect(rect, screen_index)`, which immediately reads `DisplayServer.screen_get_scale(screen_index)`, multiplies by `truck_scale` from config (default 1.0, manual override knob), and stores the result as `_scale_factor`. No secondary DisplayServer loop needed anywhere.
+- After the two-frame transparency wait in `_ready()`, if `_scale_factor != 1.0`, `_apply_display_scale()` resizes the window and calls `_entity.apply_display_scale(s)` on the entity (scales sprites and re-centers).
 - `_get_target_y()` multiplies `vertical_offset` by `_scale_factor` so the parking position stays proportional.
 - **Multi-monitor boundary crossing:** two windows at different scales will show different-sized truck halves during the crossing. This is accepted — seamless cross-boundary scaling would require per-frame window resizing (compositor thrash).
 
-Config key: `[TruckSettings] truck_scale_multiplier = 1.0`.
+Config key: `[TruckSettings] truck_scale = 1.0`.
 
 ### Customization / Garage
 
@@ -154,7 +153,7 @@ With multiple windows, each `TruckWindow` feeds its own monitor's bounds — cor
 `ConfigManager._ready()` copies `res://settings.cfg` to the executable's directory on first run (falls back to `res://` in the editor). Read values only through `ConfigManager.get_setting(section, key, default)` — defaults at every call site keep settings keys loosely coupled.
 
 Current sections:
-- `[TruckSettings]` — `min_speed`, `max_speed`, `min_wait_time`, `max_wait_time`, `vertical_offset`, `customization`, `multimonitor`, `truck_scale_multiplier`
+- `[TruckSettings]` — `min_speed`, `max_speed`, `min_wait_time`, `max_wait_time`, `vertical_offset`, `customization`, `multimonitor`, `truck_scale`
 - `[ShaderSettings]` — `fade_margin`
 
 ### Debug Tooling (Debug Builds Only)

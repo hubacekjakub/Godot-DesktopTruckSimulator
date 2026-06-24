@@ -61,9 +61,8 @@ func _ready() -> void:
 ## Called by Player right after spawn_window, before the first pass.
 func set_monitor_rect(rect: Rect2i, screen_index: int) -> void:
 	_monitor_rect = rect
-	_screen_index = screen_index
 	var s := DisplayServer.screen_get_scale(screen_index)
-	_scale_factor = s * ConfigManager.get_setting("TruckSettings", "truck_scale_multiplier", 1.0)
+	_scale_factor = s * ConfigManager.get_setting("TruckSettings", "truck_scale", 1.0)
 	if OS.is_debug_build():
 		print("TruckWindow: screen %d scale=%.2f" % [screen_index, s])
 
