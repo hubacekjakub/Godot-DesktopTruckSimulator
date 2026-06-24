@@ -1,7 +1,7 @@
 extends Node
 ## Customization event relay. All truck movement lives in the Player autoload.
 
-var _first_pass_customization_delay: float = 2.5
+var _first_pass_customization_delay: float = 4.5
 
 func _ready() -> void:
 	SignalBus.customization_finished.connect(_on_customization_finished)

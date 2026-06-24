@@ -15,6 +15,7 @@ class_name TruckEntity
 ]
 
 var _center_x: float = 192.0
+var _display_scale: float = 1.0
 var _bob_tween: Tween
 
 func _ready() -> void:
@@ -64,17 +65,27 @@ func get_center_x() -> float:
 func get_truck_body_material() -> ShaderMaterial:
 	return _truck_body.material as ShaderMaterial
 
-func update_shader_parameters(window_x: float, window_width: float, screen_left: float, screen_right: float) -> void:
+func apply_display_scale(s: float) -> void:
+	scale = Vector2(s, s)
+	position *= s
+	_center_x = position.x
+	_display_scale = s
+
+func init_shader_constants(window_width: float, screen_left: float, screen_right: float) -> void:
+	var mat := get_truck_body_material()
+	if not mat:
+		return
+	var fade_margin: float = ConfigManager.get_setting(
+		"ShaderSettings", "fade_margin", 100.0) * _display_scale
+	mat.set_shader_parameter("window_width", window_width)
+	mat.set_shader_parameter("screen_left", screen_left)
+	mat.set_shader_parameter("screen_right", screen_right)
+	mat.set_shader_parameter("fade_margin", fade_margin)
+
+func update_shader_window_x(window_x: float) -> void:
 	var mat := get_truck_body_material()
 	if mat:
 		mat.set_shader_parameter("window_x", window_x)
-		mat.set_shader_parameter("window_width", window_width)
-		mat.set_shader_parameter("screen_left", screen_left)
-		mat.set_shader_parameter("screen_right", screen_right)
-
-		# Set dynamic fade bounds configured next to EXE
-		var fade_margin: float = ConfigManager.get_setting("ShaderSettings", "fade_margin", 100.0)
-		mat.set_shader_parameter("fade_margin", fade_margin)
 
 ## Applies a TruckBodyResource: body texture + the three wheel sprites/positions.
 ## Param is base Resource because the emitter routes through SignalBus (an autoload

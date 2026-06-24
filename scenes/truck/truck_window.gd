@@ -10,6 +10,8 @@ signal border_reached
 const PARK_TWEEN_TIME: float = 0.2
 
 var _monitor_rect: Rect2i
+var _screen_index: int = 0
+var _scale_factor: float = 1.0
 var _pass_direction: int = 1
 var _border_emitted: bool = false
 
@@ -47,6 +49,11 @@ func _ready() -> void:
 	transparent = true
 	transparent_bg = true
 
+	_scale_factor = _detect_monitor_scale()
+	if _scale_factor != 1.0:
+		_apply_display_scale()
+	_entity.init_shader_constants(float(size.x), float(_monitor_rect.position.x), float(_monitor_rect.end.x))
+
 	# Emit signal to let DebugManager link the world_2d and track viewport
 	SignalBus.truck_spawned.emit(self)
 
@@ -54,8 +61,19 @@ func _ready() -> void:
 	hide_window()
 
 ## Called by Player right after spawn_window, before the first pass.
-func set_monitor_rect(rect: Rect2i) -> void:
+func set_monitor_rect(rect: Rect2i, screen_index: int) -> void:
 	_monitor_rect = rect
+	_screen_index = screen_index
+
+func _detect_monitor_scale() -> float:
+	var s := DisplayServer.screen_get_scale(_screen_index)
+	if OS.is_debug_build():
+		print("TruckWindow: screen %d scale=%.2f" % [_screen_index, s])
+	return s * ConfigManager.get_setting("TruckSettings", "truck_scale_multiplier", 1.0)
+
+func _apply_display_scale() -> void:
+	size = Vector2i(roundi(size.x * _scale_factor), roundi(size.y * _scale_factor))
+	_entity.apply_display_scale(_scale_factor)
 
 func is_truck_visible() -> bool:
 	return is_instance_valid(_entity) and _entity.visible
@@ -129,9 +147,7 @@ func _process(_delta: float) -> void:
 
 	# Clamp the shared logical_x to THIS window's monitor.
 	# roundi() avoids sub-pixel rendering and snaps to integer pixel positions.
-	var clamped_x: int = clampi(roundi(logical_x),
-		_monitor_rect.position.x,
-		_monitor_rect.position.x + _monitor_rect.size.x - size.x)
+	var clamped_x: int = clampi(roundi(logical_x), _monitor_rect.position.x, _monitor_rect.end.x - size.x)
 
 	# Changing the window position every frame causes DWM compositor roundtrips.
 	# Only assign when it actually changes. Y includes the park offset so the
@@ -155,18 +171,13 @@ func _process(_delta: float) -> void:
 	_entity.set_particles_active(multiplier > 0.1)
 	_entity.set_bob_speed(multiplier)
 
-	# Feed the edge-fade shader global screen coordinates for THIS monitor.
-	_entity.update_shader_parameters(
-		float(clamped_x),
-		float(size.x),
-		float(_monitor_rect.position.x),
-		float(_monitor_rect.position.x + _monitor_rect.size.x)
-	)
+	# Feed the edge-fade shader the current window X (one float, per-frame).
+	_entity.update_shader_window_x(float(clamped_x))
 
 	# Emit once when the truck has fully exited this monitor in its travel direction.
 	if not _border_emitted:
 		var exited := (
-			(_pass_direction == 1 and logical_x > _monitor_rect.position.x + _monitor_rect.size.x)
+			(_pass_direction == 1 and logical_x > _monitor_rect.end.x)
 			or (_pass_direction == -1 and logical_x < _monitor_rect.position.x - size.x)
 		)
 		if exited:
@@ -174,5 +185,8 @@ func _process(_delta: float) -> void:
 			border_reached.emit()
 
 func _get_target_y() -> int:
-	var vert_offset: int = ConfigManager.get_setting("TruckSettings", "vertical_offset", -192)
+	# vertical_offset is calibrated for scale 1.0; multiply so the parking
+	# position stays proportional on high-DPI monitors
+	var vert_offset: int = roundi(
+		ConfigManager.get_setting("TruckSettings", "vertical_offset", -192) * _scale_factor)
 	return _monitor_rect.position.y + _monitor_rect.size.y - size.y - vert_offset

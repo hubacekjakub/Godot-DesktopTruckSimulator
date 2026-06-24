@@ -4,6 +4,8 @@ extends Node
 ## Windows are held as base Window (not the TruckWindow class) and driven through
 ## dynamic has_method()/has_signal() checks, per the autoload class-registry rule.
 
+const TRUCK_WINDOW_SCENE := "res://scenes/truck/truck_window.tscn"
+
 var _logical_x: float = 0.0
 var _speed: float = 0.0
 var _direction: int = 1            # 1 = L->R, -1 = R->L
@@ -34,14 +36,16 @@ func _ready() -> void:
 	get_tree().create_timer(_first_pass_boot_delay).timeout.connect(start_next_pass)
 
 func _setup_windows() -> void:
-	var all_rects: Array[Rect2i] = WindowManager.get_ordered_screen_rects(ConfigManager.is_multimonitor())
+	var screen_data: Array = WindowManager.get_ordered_screen_data(ConfigManager.is_multimonitor())
 
-	for rect in all_rects:
-		var win: Window = WindowManager.spawn_window("res://scenes/truck/truck_window.tscn")
+	for pair in screen_data:
+		var rect: Rect2i = pair[0]
+		var screen_index: int = pair[1]
+		var win: Window = WindowManager.spawn_window(TRUCK_WINDOW_SCENE)
 		if not is_instance_valid(win):
 			continue
 		if win.has_method("set_monitor_rect"):
-			win.set_monitor_rect(rect)
+			win.set_monitor_rect(rect, screen_index)
 		if win.has_signal("border_reached"):
 			win.connect("border_reached", _on_border_reached.bind(win))
 		win.tree_exited.connect(_on_window_freed.bind(win))
@@ -55,7 +59,7 @@ func _on_window_freed(win: Window) -> void:
 	if _moving:
 		_check_pass_completion()
 
-func _physics_process(delta: float) -> void:
+func _process(delta: float) -> void:
 	if _moving:
 		_logical_x += _speed * _direction * _speed_multiplier * delta
 

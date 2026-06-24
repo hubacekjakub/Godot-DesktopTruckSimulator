@@ -51,11 +51,20 @@ func spawn_window(scene_path: String) -> Window:
 ## usable rect, ordered left-to-right by virtual-desktop X. Used by Player to lay
 ## out one truck window per returned rect.
 func get_ordered_screen_rects(multimonitor: bool) -> Array[Rect2i]:
-	if not multimonitor:
-		return [_usable_rect]
-
+	var data := get_ordered_screen_data(multimonitor)
 	var rects: Array[Rect2i] = []
-	for i in DisplayServer.get_screen_count():
-		rects.append(DisplayServer.screen_get_usable_rect(i))
-	rects.sort_custom(func(a, b): return a.position.x < b.position.x)
+	for pair in data:
+		rects.append(pair[0])
 	return rects
+
+## Like get_ordered_screen_rects but preserves the DisplayServer screen index for
+## each rect. Returns Array of [Rect2i, int] pairs sorted left-to-right by X so
+## callers never need to re-discover the index via a second DisplayServer loop.
+func get_ordered_screen_data(multimonitor: bool) -> Array:
+	if not multimonitor:
+		return [[_usable_rect, _target_screen_idx]]
+	var pairs: Array = []
+	for i in DisplayServer.get_screen_count():
+		pairs.append([DisplayServer.screen_get_usable_rect(i), i])
+	pairs.sort_custom(func(a, b): return a[0].position.x < b[0].position.x)
+	return pairs
