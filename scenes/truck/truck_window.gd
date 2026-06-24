@@ -10,7 +10,6 @@ signal border_reached
 const PARK_TWEEN_TIME: float = 0.2
 
 var _monitor_rect: Rect2i
-var _screen_index: int = 0
 var _scale_factor: float = 1.0
 var _pass_direction: int = 1
 var _border_emitted: bool = false
@@ -49,7 +48,6 @@ func _ready() -> void:
 	transparent = true
 	transparent_bg = true
 
-	_scale_factor = _detect_monitor_scale()
 	if _scale_factor != 1.0:
 		_apply_display_scale()
 	_entity.init_shader_constants(float(size.x), float(_monitor_rect.position.x), float(_monitor_rect.end.x))
@@ -64,12 +62,10 @@ func _ready() -> void:
 func set_monitor_rect(rect: Rect2i, screen_index: int) -> void:
 	_monitor_rect = rect
 	_screen_index = screen_index
-
-func _detect_monitor_scale() -> float:
-	var s := DisplayServer.screen_get_scale(_screen_index)
+	var s := DisplayServer.screen_get_scale(screen_index)
+	_scale_factor = s * ConfigManager.get_setting("TruckSettings", "truck_scale_multiplier", 1.0)
 	if OS.is_debug_build():
-		print("TruckWindow: screen %d scale=%.2f" % [_screen_index, s])
-	return s * ConfigManager.get_setting("TruckSettings", "truck_scale_multiplier", 1.0)
+		print("TruckWindow: screen %d scale=%.2f" % [screen_index, s])
 
 func _apply_display_scale() -> void:
 	size = Vector2i(roundi(size.x * _scale_factor), roundi(size.y * _scale_factor))
