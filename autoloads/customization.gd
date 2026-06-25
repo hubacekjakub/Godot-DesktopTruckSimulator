@@ -53,6 +53,8 @@ func _ready() -> void:
 	SignalBus.truck_movement_resume_triggered.connect(_on_truck_movement_resume_triggered)
 	SignalBus.customization_confirmed.connect(_on_customization_confirmed)
 	SignalBus.customization_finished.connect(_on_customization_finished)
+	SignalBus.tray_visibility_changed.connect(_on_tray_visibility_changed)
+	SignalBus.tray_customization_requested.connect(_on_tray_customization_requested)
 
 func get_colors() -> Array[Color]:
 	return _colors
@@ -89,3 +91,13 @@ func _on_customization_finished() -> void:
 	if is_instance_valid(_garage_window_instance):
 		_garage_window_instance.queue_free()
 		_garage_window_instance = null
+
+func _on_tray_visibility_changed(visible: bool) -> void:
+	if not visible and is_instance_valid(_garage_window_instance):
+		_garage_window_instance.queue_free()
+		_garage_window_instance = null
+
+func _on_tray_customization_requested() -> void:
+	if is_instance_valid(_garage_window_instance):
+		return
+	SignalBus.truck_movement_stop_triggered.emit()

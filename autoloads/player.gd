@@ -12,6 +12,7 @@ var _direction: int = 1            # 1 = L->R, -1 = R->L
 var _moving: bool = false
 var _speed_multiplier: float = 1.0
 var _is_paused: bool = false
+var _app_hidden: bool = false
 
 var _window_monitors: Dictionary = {} # Window -> Rect2i
 var _crossed_windows: Array[Window] = []
@@ -29,6 +30,7 @@ func _ready() -> void:
 
 	SignalBus.truck_movement_stop_triggered.connect(_on_truck_movement_stop_triggered)
 	SignalBus.truck_movement_resume_triggered.connect(_on_truck_movement_resume_triggered)
+	SignalBus.tray_visibility_changed.connect(_on_tray_visibility_changed)
 
 	_setup_windows()
 
@@ -64,7 +66,7 @@ func _process(delta: float) -> void:
 		_logical_x += _speed * _direction * _speed_multiplier * delta
 
 func start_next_pass() -> void:
-	if _is_paused:
+	if _is_paused or _app_hidden:
 		return
 	if _window_monitors.is_empty():
 		return
@@ -154,6 +156,8 @@ func _on_truck_movement_stop_triggered() -> void:
 	_multiplier_tween.finished.connect(SignalBus.truck_movement_stop_finished.emit)
 
 func _on_truck_movement_resume_triggered() -> void:
+	if _app_hidden:
+		return
 	_is_paused = false
 	if _moving:
 		if _multiplier_tween and _multiplier_tween.is_valid():
@@ -188,3 +192,21 @@ func get_truck_rect() -> Rect2i:
 		if win.has_method("is_truck_visible") and win.call("is_truck_visible"):
 			return Rect2i(win.position, win.size)
 	return Rect2i()
+
+func _on_tray_visibility_changed(visible: bool) -> void:
+	if not visible:
+		_app_hidden = true
+		_moving = false
+		_is_paused = false
+		_wait_timer.stop()
+		if _multiplier_tween and _multiplier_tween.is_valid():
+			_multiplier_tween.kill()
+		_speed_multiplier = 1.0
+		_logical_x = 0.0
+		_crossed_windows.clear()
+		for win in _window_monitors:
+			if is_instance_valid(win) and win.has_method("hide_window"):
+				win.hide_window()
+	else:
+		_app_hidden = false
+		start_next_pass()
