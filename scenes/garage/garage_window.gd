@@ -1,22 +1,31 @@
 extends Window
 
-var _colors: Array[Color] = []
-var _bodies: Array[Resource] = []
+var _colors: Array[String] = []
+var _cabin_keys: Array[String] = []
+var _cabin_values: Array[Resource] = []
 
-var current_color_index: int = 0
-var current_cabin_index: int = 0
+var _current_color_index: int = 0
+var _current_cabin_index: int = 0
 
 @onready var color_counter: Label = $PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxColor/CounterColor
 @onready var cabin_counter: Label = $PanelContainer/MarginContainer/VBoxContainer/VBoxOptions/HBoxCabin/CounterCabin
 
 func _ready() -> void:
-	_colors = Customization.get_colors()
-	_bodies = Customization.get_bodies()
+	_colors = Customization.get_available_colors()
+	var bodies: Dictionary = Customization.get_bodies()
+	# .keys() and .values() return untyped Array — use .assign() to populate typed arrays
+	_cabin_keys.assign(bodies.keys())
+	_cabin_values.assign(bodies.values())
 	assert(_colors.size() > 0, "garage_window: color list must not be empty")
-	assert(_bodies.size() > 0, "garage_window: body list must not be empty")
-	current_color_index = Customization.current_color_index
-	current_cabin_index = Customization.current_cabin_index
+	assert(_cabin_keys.size() > 0, "garage_window: cabin list must not be empty")
+
+	_current_color_index = max(0, _colors.find(Customization.current_color_id))
+	_current_cabin_index = max(0, _cabin_keys.find(Customization.current_cabin_id))
 	update_ui()
+
+	# Emit customization_finished if the user closes via the OS X button, so the
+	# truck resumes instead of staying stopped forever (deadlock prevention).
+	close_requested.connect(func(): SignalBus.customization_finished.emit())
 
 	var truck_rect := Global.get_truck_rect()
 	if truck_rect.size != Vector2i.ZERO:
@@ -28,31 +37,31 @@ func _ready() -> void:
 	show()
 
 func next_color() -> void:
-	current_color_index = (current_color_index + 1) % _colors.size()
-	SignalBus.customization_color_changed.emit(_colors[current_color_index])
+	_current_color_index = (_current_color_index + 1) % _colors.size()
+	SignalBus.customization_color_changed.emit(Color(_colors[_current_color_index]))
 	update_ui()
 
 func previous_color() -> void:
-	current_color_index = (current_color_index - 1 + _colors.size()) % _colors.size()
-	SignalBus.customization_color_changed.emit(_colors[current_color_index])
+	_current_color_index = (_current_color_index - 1 + _colors.size()) % _colors.size()
+	SignalBus.customization_color_changed.emit(Color(_colors[_current_color_index]))
 	update_ui()
 
 func next_cabin() -> void:
-	current_cabin_index = (current_cabin_index + 1) % _bodies.size()
-	SignalBus.customization_cabin_changed.emit(_bodies[current_cabin_index])
+	_current_cabin_index = (_current_cabin_index + 1) % _cabin_keys.size()
+	SignalBus.customization_cabin_changed.emit(_cabin_values[_current_cabin_index])
 	update_ui()
 
 func previous_cabin() -> void:
-	current_cabin_index = (current_cabin_index - 1 + _bodies.size()) % _bodies.size()
-	SignalBus.customization_cabin_changed.emit(_bodies[current_cabin_index])
+	_current_cabin_index = (_current_cabin_index - 1 + _cabin_keys.size()) % _cabin_keys.size()
+	SignalBus.customization_cabin_changed.emit(_cabin_values[_current_cabin_index])
 	update_ui()
 
 func update_ui() -> void:
-	color_counter.text = "%d/%d" % [current_color_index + 1, _colors.size()]
-	cabin_counter.text = "%d/%d" % [current_cabin_index + 1, _bodies.size()]
+	color_counter.text = "%d/%d" % [_current_color_index + 1, _colors.size()]
+	cabin_counter.text = "%d/%d" % [_current_cabin_index + 1, _cabin_keys.size()]
 
 func confirm() -> void:
-	SignalBus.customization_confirmed.emit(current_color_index, current_cabin_index)
+	SignalBus.customization_confirmed.emit(_colors[_current_color_index], _cabin_keys[_current_cabin_index])
 
 func position_above_rect(target_rect: Rect2i, vertical_margin: int = 10) -> void:
 	initial_position = Window.WINDOW_INITIAL_POSITION_ABSOLUTE

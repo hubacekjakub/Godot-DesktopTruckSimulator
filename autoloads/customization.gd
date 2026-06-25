@@ -1,51 +1,55 @@
 extends Node
-## Handles skin customization to the truck. Owns the color + body lists and the
-## current selection. No persistence — selections last only for the session.
+## Handles skin customization to the truck. Owns the color + cabin catalogs and
+## current selection. Persists across sessions via SaveManager.
+
+const DEFAULT_COLOR_ID := "#ebede9"
+const DEFAULT_CABIN_ID := "cabin_eu_basic"
+
+# Always available — never saved, never locked.
+var _default_colors: Array[String] = [
+	"#ebede9",
+	"#4f8fba",
+	"#3c5e8b",
+	"#d0da91",
+	"#75a743",
+	"#25562e",
+	"#c7cfcc",
+	"#cf573c",
+	"#752438",
+	"#df84a5",
+	"#a23e8c",
+	"#402751",
+]
+
+# Hidden until unlocked through gameplay or manually added to save file.
+var _unlockable_colors: Array[String] = [
+	"#73bed3",
+	"#577277",
+	"#253a5e",
+	"#a8ca58",
+	"#468232",
+	"#de9e41",
+	"#a53030",
+	"#411d31",
+	"#c65197",
+	"#7a367b",
+]
+
+# Populated from save on boot. Subset of _unlockable_colors + any custom player hex strings.
+var _unlocked_colors: Array[String] = []
+
+# All cabins start unlocked. Held as base Resource — autoload must not reference
+# TruckBodyResource class_name statically (class-registry rule).
+var _cabin_catalog: Dictionary = {
+	"cabin_eu_basic": preload("res://resources/truck_bodies/eu_truck_basic.tres"),
+	"cabin_us_basic": preload("res://resources/truck_bodies/us_truck_basic.tres"),
+}
 
 var _garage_window_resource: String = "res://scenes/garage/garage_window.tscn"
 var _garage_window_instance: Window = null
 
-# Body list. Held as base Resource (NOT TruckBodyResource) — this is an autoload and
-# must not reference the class_name statically (class-registry rule).
-var _bodies: Array[Resource] = [
-	preload("res://resources/truck_bodies/eu_truck_basic.tres"),
-	preload("res://resources/truck_bodies/us_truck_basic.tres"),
-]
-
-var _colors: Array[Color] = [
-	Color("#ebede9"),
-
-	Color("#73bed3"),
-	Color("#4f8fba"),
-	Color("#577277"),
-	Color("#3c5e8b"),
-	Color("#253a5e"),
-
-	Color("#d0da91"),
-	Color("#a8ca58"),
-	Color("#75a743"),
-	Color("#468232"),
-	Color("#25562e"),
-
-	Color("#ebede9"),
-	Color("#c7cfcc"),
-
-	Color("#de9e41"),
-	Color("#cf573c"),
-	Color("#a53030"),
-	Color("#752438"),
-	Color("#411d31"),
-
-	Color("#df84a5"),
-	Color("#c65197"),
-	Color("#a23e8c"),
-	Color("#7a367b"),
-	Color("#402751"),
-]
-
-var current_color_index: int = 0
-var current_cabin_index: int = 0
-var current_wheels_index: int = 0
+var current_color_id: String = DEFAULT_COLOR_ID
+var current_cabin_id: String = DEFAULT_CABIN_ID
 
 func _ready() -> void:
 	SignalBus.truck_spawned.connect(_on_truck_spawned)
@@ -53,22 +57,37 @@ func _ready() -> void:
 	SignalBus.truck_movement_resume_triggered.connect(_on_truck_movement_resume_triggered)
 	SignalBus.customization_confirmed.connect(_on_customization_confirmed)
 	SignalBus.customization_finished.connect(_on_customization_finished)
+	SignalBus.save_loaded.connect(_on_save_loaded)
 	SignalBus.tray_visibility_changed.connect(_on_tray_visibility_changed)
 	SignalBus.tray_customization_requested.connect(_on_tray_customization_requested)
 
-func get_colors() -> Array[Color]:
-	return _colors
+func get_available_colors() -> Array[String]:
+	var result: Array[String] = _default_colors.duplicate()
+	for hex in _unlocked_colors:
+		if not result.has(hex):
+			result.append(hex)
+	return result
 
-func get_bodies() -> Array[Resource]:
-	return _bodies
+func get_bodies() -> Dictionary:
+	return _cabin_catalog
 
-## Pushes current customization to a freshly-spawned truck over SignalBus.
-## Fires once per window; idempotent across multi-monitor spawns.
+func get_unlocked_colors() -> Array[String]:
+	return _unlocked_colors
+
+func is_color_unlockable(hex: String) -> bool:
+	return _unlockable_colors.has(hex)
+
+func _on_save_loaded(color_id: String, cabin_id: String, unlocked_colors: Array[String]) -> void:
+	if not color_id.is_empty():
+		current_color_id = color_id
+	if not cabin_id.is_empty():
+		current_cabin_id = cabin_id
+	_unlocked_colors.assign(unlocked_colors)
+
 func _on_truck_spawned(_truck_window: Window) -> void:
-	if current_color_index >= 0 and current_color_index < _colors.size():
-		SignalBus.customization_color_changed.emit(_colors[current_color_index])
-	if current_cabin_index >= 0 and current_cabin_index < _bodies.size():
-		SignalBus.customization_cabin_changed.emit(_bodies[current_cabin_index])
+	SignalBus.customization_color_changed.emit(Color(current_color_id))
+	if _cabin_catalog.has(current_cabin_id):
+		SignalBus.customization_cabin_changed.emit(_cabin_catalog[current_cabin_id])
 
 func _on_truck_movement_stop_finished() -> void:
 	if _garage_window_resource.is_empty():
@@ -80,11 +99,9 @@ func _on_truck_movement_resume_triggered() -> void:
 		_garage_window_instance.queue_free()
 		_garage_window_instance = null
 
-## Garage broadcasts this UP when the user confirms; Customization saves the
-## selection and emits customization_finished to close the garage and resume movement.
-func _on_customization_confirmed(color_idx: int, cabin_idx: int) -> void:
-	current_color_index = color_idx
-	current_cabin_index = cabin_idx
+func _on_customization_confirmed(color_id: String, cabin_id: String) -> void:
+	current_color_id = color_id
+	current_cabin_id = cabin_id
 	SignalBus.customization_finished.emit()
 
 func _on_customization_finished() -> void:

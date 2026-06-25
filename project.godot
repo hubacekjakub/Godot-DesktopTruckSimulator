@@ -27,6 +27,7 @@ Global="*res://autoloads/global.gd"
 DebugManager="*res://autoloads/debug_manager.gd"
 Customization="*res://autoloads/customization.gd"
 SystemTray="*res://autoloads/system_tray.gd"
+SaveManager="*res://autoloads/save_manager.gd"
 
 [display]
 

@@ -198,6 +198,10 @@ func get_truck_rect() -> Rect2i:
 
 func _on_tray_visibility_changed(visible: bool) -> void:
 	if not visible:
+		# If paused for customization, notify listeners (Customization) to clean
+		# up the garage window before we reset movement state.
+		if _is_paused:
+			SignalBus.truck_movement_resume_triggered.emit()
 		_app_hidden = true
 		_moving = false
 		_is_paused = false

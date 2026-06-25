@@ -41,7 +41,7 @@ There is **no automated test suite**. `-e -q` headless import is the only syntax
 ## Project Structure
 
 ```
-autoloads/          # Singletons (boot order: SignalBus → ConfigManager → WindowManager → Player → Global → DebugManager → Customization)
+autoloads/          # Singletons (boot order: SignalBus → ConfigManager → WindowManager → Player → Global → DebugManager → Customization → SystemTray → SaveManager)
 levels/             # Root scene (levels/main.tscn / main.gd — minimizes the launcher window; real app lives in autoloads)
 scenes/             # Reusable components (truck/, garage/, debug/)
 shaders/            # GLSL shaders
@@ -58,6 +58,8 @@ settings.cfg        # Config file (copied next to EXE on first run by ConfigMana
 - `Global` — thin relay: fires initial stop timer, re-emits resume on customization finish, delegates `get_truck_rect()` to Player.
 - `DebugManager` — spawns debug panel and portal (debug builds only).
 - `Customization` — spawns and manages the garage window.
+- `SystemTray` — creates the system-tray icon and popup menu; communicates only through SignalBus.
+- `SaveManager` — JSON persistence for customization state; loads on boot, saves on confirm.
 
 ---
 

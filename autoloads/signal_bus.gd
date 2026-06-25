@@ -16,8 +16,11 @@ signal truck_movement_resume_finished()
 signal customization_color_changed(color: Color)
 signal customization_cabin_changed(body: Resource)
 signal customization_wheels_changed(wheel_id: int)
-signal customization_confirmed(color_index: int, cabin_index: int)
+signal customization_confirmed(color_id: String, cabin_id: String)
 signal customization_finished()
+
+# Save
+signal save_loaded(color_id: String, cabin_id: String, unlocked_colors: Array[String])
 
 # System tray
 signal tray_visibility_changed(visible: bool)
