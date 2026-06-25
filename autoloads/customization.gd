@@ -8,31 +8,35 @@ const DEFAULT_CABIN_ID := "cabin_eu_basic"
 # Always available — never saved, never locked.
 var _default_colors: Array[String] = [
 	"#ebede9",
-	"#4f8fba",
-	"#3c5e8b",
-	"#d0da91",
-	"#75a743",
-	"#25562e",
-	"#c7cfcc",
-	"#cf573c",
-	"#752438",
+	"#e8c170",
+	"#a4dddb",
 	"#df84a5",
+	"#4f8fba",
+	"#cf573c",
+	"#3c5e8b",
+	"#7a4841",
+	"#25562e",
 	"#a23e8c",
-	"#402751",
+	"#411d31",
+	"#253a5e",
 ]
 
 # Hidden until unlocked through gameplay or manually added to save file.
 var _unlockable_colors: Array[String] = [
 	"#73bed3",
 	"#577277",
-	"#253a5e",
 	"#a8ca58",
 	"#468232",
 	"#de9e41",
 	"#a53030",
-	"#411d31",
 	"#c65197",
 	"#7a367b",
+	"#be772b",
+	"#602c2c",
+	"#da863e",
+	"#e7d5b3",
+	"#ad7757",
+	"#819796",
 ]
 
 # Populated from save on boot. Subset of _unlockable_colors + any custom player hex strings.
