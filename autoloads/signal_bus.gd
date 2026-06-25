@@ -19,6 +19,11 @@ signal customization_wheels_changed(wheel_id: int)
 signal customization_confirmed(color_index: int, cabin_index: int)
 signal customization_finished()
 
+# System tray
+signal tray_visibility_changed(visible: bool)
+signal tray_customization_requested()
+signal tray_quit_requested()
+
 # Debug actions
 signal debug_portal_toggle_requested(open: bool)
 signal truck_color_randomize_requested()
