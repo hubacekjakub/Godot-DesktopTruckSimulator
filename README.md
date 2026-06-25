@@ -1,6 +1,6 @@
 # Desktop Truck Simulator
 
-A desktop companion built with Godot 4.6. A small truck drives across the bottom of your screen in its own transparent window. This is a hobby experiment for learning how OS windows, subwindows, and per-pixel transparency work in Godot.
+A small truck that drives across the bottom of your screen. Built with Godot 4.6 as a playground for figuring out how transparent OS windows, multi-monitor traversal, and per-pixel transparency actually work in Godot.
 
 [![Itch.io](https://img.shields.io/badge/Itch.io-View%20on%20Itch-FA5C5C?style=flat&logo=itch.io)](https://hubacekjakub.itch.io/desktop-truck-simulator)
 [![Latest Release](https://img.shields.io/badge/GitHub-Release-blue?logo=github)](https://github.com/hubacekjakub/Godot-DesktopTruckSimulator/releases/latest)
@@ -9,69 +9,80 @@ A desktop companion built with Godot 4.6. A small truck drives across the bottom
 
 ![Desktop Truck Simulator Banner](gifs/TruckBanner.gif)
 
-## Features
+## What it does
 
-- **Transparent Window Rendering**: The truck is rendered in its own borderless, transparent window that sits on top of all other windows using per-pixel transparency.
-- **Edge Fading**: Shader-based transitions as the truck enters and leaves the screen edges.
-- **Truck Customization**: A garage window allows changing the truck's appearance via shader-based color adjustments.
-- **Configurable**: A `settings.cfg` file ships alongside the executable, allowing players to adjust basic settings like speed and timing.
-- **Persistent Window Reuse**: The truck window is created once at startup and hidden/repositioned between passes, avoiding OS-level window creation lag.
-- **Lightweight**: Built using the `gl_compatibility` (OpenGL) renderer for maximum compatibility and low resource usage.
+- Truck drives across your desktop in a transparent borderless window, on top of everything else
+- Shader-based edge fading as it enters and leaves screen edges
+- Traverses multiple monitors in sequence
+- System tray icon to toggle visibility, open the garage, or quit
+- Garage window to pick truck color and cabin style — saved between sessions
+- `settings.cfg` next to the exe for tweaking speed, timing, scale, etc.
 
-## Showcase
+## Visuals
 
 | Truck in PowerPoint | Truck in Excel |
 | :---: | :---: |
 | ![Powerpoint](gifs/TruckPowerpoint.gif) | ![Excel](gifs/TruckExcel.gif) |
 
-## Technical Details
+| System Tray | Garage |
+| :---: | :---: |
+| *(coming soon)* | *(coming soon)* |
 
-### Architecture
+## Architecture
 
-- **Multi-Window System**: The main application window is hidden. A secondary `Window` node handles the truck rendering and movement.
-- **Event-Driven Communication**: All cross-scene communication routes through a `SignalBus` autoload to keep systems decoupled.
-- **Autoload Singletons**: Core systems (`SignalBus`, `ConfigManager`, `WindowManager`, `Global`, `Customization`) are registered as autoloads and coordinate through signals.
-- **Transparency Workaround**: Implements a workaround for [Godot bug #71642](https://github.com/godotengine/godot/issues/71642) — windows start off-screen with transparency disabled, wait 2 frames, then toggle transparency flags before moving on-screen.
-- **Shader-Based Fading**: A custom `CanvasItem` shader calculates global screen positions for pixel-perfect fading at monitor edges.
+Everything talks through `SignalBus` — no direct autoload-to-autoload calls. The main window is hidden; the truck lives in its own secondary `Window` node that gets reused across passes rather than destroyed and recreated.
 
-### Configuration
+Autoload boot order matters here:
 
-A `settings.cfg` file is placed next to the executable. Players can edit it to adjust basic settings. If the file is deleted, the application recreates it from defaults on the next launch.
+```
+SignalBus → ConfigManager → WindowManager → Player → Global → DebugManager → Customization → SystemTray → SaveManager
+```
 
-### Requirements
+**Autoloads at a glance:**
+- `SignalBus` — all cross-system signals live here, nothing else
+- `ConfigManager` — reads `settings.cfg`, copies it next to the exe on first run
+- `WindowManager` — owns the truck window and manages usable screen rect
+- `Player` — movement logic, pass timing, multi-monitor traversal
+- `Global` — thin relay; fires the initial stop timer, delegates `get_truck_rect()`
+- `DebugManager` — spawns the debug panel and portal (debug builds only)
+- `Customization` — color/cabin catalogs, garage window lifecycle, save/load integration
+- `SystemTray` — tray icon and popup menu, communicates only through SignalBus
+- `SaveManager` — loads `user://savegame.json` on boot, saves on confirm
 
-- **OS**: Windows 10/11, Linux (x86_64)
-- **Renderer**: OpenGL (GL Compatibility mode) is required for per-pixel transparency.
+## Interesting bits
 
-## Development
+**Transparent window timing** — there's a workaround for [Godot bug #71642](https://github.com/godotengine/godot/issues/71642): windows spawn off-screen with transparency disabled, wait 2 frames, then enable transparency before moving on-screen. Without this the window flickers opaque on first appearance.
 
-### Setup
-1. Clone the repository (requires [Git LFS](https://git-lfs.github.com/) for binary assets).
-2. Open in Godot 4.6+.
-3. Ensure the project is set to `GL Compatibility` renderer.
+**Edge fade shader** — a `CanvasItem` shader calculates the truck's global screen position and fades pixels near the monitor edges. Works across monitors because it operates in screen space.
 
-### Project Structure
-- `levels/` — Root scene (`main.tscn` / `main.gd`).
-- `autoloads/` — Singletons: `SignalBus`, `ConfigManager`, `WindowManager`, `Global`, `Customization`, `DebugManager`.
-- `scenes/truck/` — Truck window and entity (movement, animation, particles).
-- `scenes/garage/` — Garage customization window.
-- `shaders/` — Edge-fade shader (`truck_fade.gdshader`).
-- `assets/` — Textures, fonts, and other resources.
+**Garage timing** — the truck stops for customization by emitting `truck_movement_stop_triggered`. The garage opens on `truck_movement_stop_finished` (after the stop animation completes). This keeps the stop animation and the garage open/close fully decoupled.
+
+**Save format** — `user://savegame.json` resolves to `%APPDATA%/Godot/app_userdata/DesktopTruckSimulator/savegame.json`. The `unlocked_colors` array accepts any hex string, so players can hand-edit it to add custom colors.
+
+## Project structure
+
+```
+autoloads/          # Singletons (see boot order above)
+levels/             # Root scene — minimizes the launcher window; real app lives in autoloads
+scenes/             # Reusable components (truck/, garage/, debug/)
+shaders/            # Edge-fade shader (truck_fade.gdshader)
+resources/          # TruckBody resources, fonts
+assets/             # Textures and other binary assets (Git LFS)
+settings.cfg        # Shipped next to the exe; recreated from defaults if deleted
+```
+
+## Setup
+
+1. Clone (requires [Git LFS](https://git-lfs.github.com/) for binary assets — run `git lfs pull` after cloning)
+2. Open in Godot 4.6+
+3. Renderer must be `GL Compatibility` — per-pixel transparency doesn't work on Vulkan
 
 ### Troubleshooting
 
-#### Missing Resources / "Failed Loading" Errors
-If you see errors about missing `.ctex` files or failed loading of textures:
-1.  **Git LFS**: This project uses Git LFS for binary assets (images, GIFs). Ensure you have [Git LFS](https://git-lfs.github.com/) installed and run:
-    ```bash
-    git lfs pull
-    ```
-2.  **Re-import**: Delete the `.godot` folder in the project root and reopen the project in Godot. This forces a clean re-import of all assets.
+**Missing `.ctex` files / failed loading** — you're probably missing LFS files. Run `git lfs pull`.
 
-#### UID Warnings
-If you see "invalid UID" warnings in the console, they can be safely ignored as Godot falls back to file paths.
+**"Invalid UID" warnings** — safe to ignore, Godot falls back to file paths automatically.
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
-
+[MIT](LICENSE)
