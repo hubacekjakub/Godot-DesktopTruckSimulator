@@ -147,6 +147,9 @@ func _on_wait_timer_timeout() -> void:
 
 func _on_truck_movement_stop_triggered() -> void:
 	if not _moving:
+		_wait_timer.stop()
+		_is_paused = true
+		SignalBus.truck_movement_stop_finished.emit()
 		return
 	_is_paused = true
 	if _multiplier_tween and _multiplier_tween.is_valid():

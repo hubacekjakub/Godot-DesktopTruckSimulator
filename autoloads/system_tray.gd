@@ -40,6 +40,7 @@ func _on_status_indicator_pressed(mouse_button: MouseButton, mouse_pos: Vector2i
 		if _popup_menu.visible:
 			_popup_menu.hide()
 		else:
+			get_tree().root.grab_focus()
 			_popup_menu.popup(Rect2i(mouse_pos, Vector2i.ZERO))
 			_popup_menu.grab_focus()
 
