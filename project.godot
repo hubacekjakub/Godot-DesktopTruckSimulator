@@ -26,16 +26,17 @@ Player="*res://autoloads/player.gd"
 Global="*res://autoloads/global.gd"
 DebugManager="*res://autoloads/debug_manager.gd"
 Customization="*res://autoloads/customization.gd"
+SystemTray="*res://autoloads/system_tray.gd"
 
 [display]
 
 window/size/viewport_width=384
 window/size/viewport_height=384
+window/size/initial_position_type=0
+window/size/initial_position=Vector2i(-10000, -10000)
 window/size/borderless=true
 window/size/always_on_top=true
 window/size/transparent=true
-window/size/initial_position_type=0
-window/size/initial_position=Vector2i(-10000, -10000)
 window/subwindows/embed_subwindows=false
 window/per_pixel_transparency/allowed=true
 

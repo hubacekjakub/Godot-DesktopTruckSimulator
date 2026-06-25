@@ -25,14 +25,23 @@ func _ready() -> void:
 	_popup_menu.set_item_disabled(_popup_menu.get_item_index(MENU_JOBS), true)
 
 	_popup_menu.id_pressed.connect(_on_menu_id_pressed)
+	_popup_menu.focus_exited.connect(_popup_menu.hide)
 	add_child(_popup_menu)
 
 	_status_indicator = StatusIndicator.new()
+	add_child(_status_indicator)
 	_status_indicator.icon = load("res://icon.svg")
 	_status_indicator.tooltip = "Desktop Truck Simulator"
-	_status_indicator.menu = _popup_menu.get_path()
+	_status_indicator.pressed.connect(_on_status_indicator_pressed)
 	_status_indicator.visible = true
-	add_child(_status_indicator)
+
+func _on_status_indicator_pressed(mouse_button: MouseButton, mouse_pos: Vector2i) -> void:
+	if mouse_button == MOUSE_BUTTON_RIGHT:
+		if _popup_menu.visible:
+			_popup_menu.hide()
+		else:
+			_popup_menu.popup(Rect2i(mouse_pos, Vector2i.ZERO))
+			_popup_menu.grab_focus()
 
 func _on_menu_id_pressed(id: int) -> void:
 	match id:
