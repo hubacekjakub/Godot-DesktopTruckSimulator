@@ -26,7 +26,7 @@ A small truck that drives across the bottom of your screen. Built with Godot 4.6
 
 | System Tray | Garage |
 | :---: | :---: |
-| *(coming soon)* | *(coming soon)* |
+| ![System Tray](gifs/TruckSystemTray.gif) | ![Garage](gifs/TrucCustomization.gif) |
 
 ## Architecture
 
@@ -86,6 +86,10 @@ settings.cfg        # Shipped next to the exe; recreated from defaults if delete
 **Missing `.ctex` files / failed loading** - you're probably missing LFS files. Run `git lfs pull`.
 
 **"Invalid UID" warnings** - safe to ignore, Godot falls back to file paths automatically.
+
+## Credits
+
+- Font: [Thaleah](https://tinyworlds.itch.io/free-pixel-font-thaleah) by Rick Hoppmann (Tiny Worlds), licensed under CC-BY 4.0.
 
 ## License
 
