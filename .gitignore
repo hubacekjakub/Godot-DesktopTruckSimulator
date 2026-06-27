@@ -45,3 +45,10 @@ Thumbs.db
 # Superpowers brainstorming tool
 .superpowers/
 
+# GDExtension build artifacts
+gdextension/build/
+bin/*.pdb
+bin/*.ilk
+bin/~*
+bin/*.uid
+

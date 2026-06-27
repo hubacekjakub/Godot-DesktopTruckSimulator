@@ -48,6 +48,12 @@ func _ready() -> void:
 	transparent = true
 	transparent_bg = true
 
+	if OS.get_name() == "Windows":
+		if Engine.has_singleton("Win32Passthrough"):
+			Engine.get_singleton("Win32Passthrough").set_passthrough(get_window_id(), true)
+	else:
+		DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_MOUSE_PASSTHROUGH, true, get_window_id())
+
 	if _scale_factor != 1.0:
 		_apply_display_scale()
 	_entity.init_shader_constants(float(size.x), float(_monitor_rect.position.x), float(_monitor_rect.end.x))
