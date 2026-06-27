@@ -12,7 +12,7 @@ jobs:
     name: "⚡ Validate Project"
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           lfs: true
 
@@ -73,7 +73,7 @@ jobs:
     name: "📏 Code Style"
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Install gdtoolkit
         run: pip install gdtoolkit==4.*
