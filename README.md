@@ -1,11 +1,11 @@
 # Desktop Truck Simulator
 
-A small truck that drives across the bottom of your screen. Built with Godot 4.6 as a playground for figuring out how transparent OS windows, multi-monitor traversal, and per-pixel transparency actually work in Godot.
+A small truck that drives across the bottom of your screen. Built with Godot 4.7 as a playground for figuring out how transparent OS windows, multi-monitor traversal, and per-pixel transparency actually work in Godot.
 
 [![Itch.io](https://img.shields.io/badge/Itch.io-View%20on%20Itch-FA5C5C?style=flat&logo=itch.io)](https://hubacekjakub.itch.io/desktop-truck-simulator)
 [![Latest Release](https://img.shields.io/badge/GitHub-Release-blue?logo=github)](https://github.com/hubacekjakub/Godot-DesktopTruckSimulator/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/hubacekjakub/Godot-QuickStart/blob/main/LICENSE)
-[![Godot 4.6](https://img.shields.io/badge/Godot-4.6-blue)](https://godotengine.org/)
+[![Godot 4.7](https://img.shields.io/badge/Godot-4.7-blue)](https://godotengine.org/)
 
 ![Desktop Truck Simulator Banner](gifs/TruckBanner.gif)
 
@@ -78,7 +78,7 @@ settings.cfg        # Shipped next to the exe; recreated from defaults if delete
 ## Setup
 
 1. Clone (requires [Git LFS](https://git-lfs.github.com/) for binary assets - run `git lfs pull` after cloning)
-2. Open in Godot 4.6+
+2. Open in Godot 4.7+
 3. Renderer must be `GL Compatibility` - per-pixel transparency doesn't work on Vulkan
 
 ### Troubleshooting
