@@ -46,22 +46,12 @@ func _on_status_indicator_pressed(mouse_button: MouseButton, mouse_pos: Vector2i
 			# window — the launcher parked at WindowManager.OFFSCREEN — which
 			# drags it onto the leftmost monitor (Popup::_popup_adjust_rect).
 			# Re-assert the position now that the menu is visible: assigning it
-			# directly bypasses that clamp.
-			_popup_menu.position = _menu_position(mouse_pos)
+			# directly bypasses that clamp. The cursor is still on the tray
+			# icon, so its screen is the clicked one; clamping to the usable
+			# rect keeps the menu above the taskbar.
+			var usable := DisplayServer.screen_get_usable_rect(DisplayServer.SCREEN_WITH_MOUSE_FOCUS)
+			_popup_menu.position = mouse_pos.clamp(usable.position, usable.end - _popup_menu.size)
 			_popup_menu.grab_focus()
-
-## Menu position kept inside the usable rect of the clicked screen, so the
-## menu opens above the taskbar instead of running past the screen edge.
-func _menu_position(click_pos: Vector2i) -> Vector2i:
-	var usable: Rect2i = DisplayServer.screen_get_usable_rect(_screen_containing(click_pos))
-	return click_pos.clamp(usable.position, usable.end - _popup_menu.size)
-
-## Screen whose full rect (taskbar included) contains the point.
-func _screen_containing(point: Vector2i) -> int:
-	for i in DisplayServer.get_screen_count():
-		if Rect2i(DisplayServer.screen_get_position(i), DisplayServer.screen_get_size(i)).has_point(point):
-			return i
-	return DisplayServer.get_primary_screen()
 
 func _on_menu_id_pressed(id: int) -> void:
 	match id:
